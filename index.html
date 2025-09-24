@@ -1,0 +1,3052 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMap Pro - Criador de Mapa Mental</title>
+    <style>
+        :root {
+            /* Tema Padrão */
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --background-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --connection-color: #8ea2fc;
+        }
+
+        /* Tema Azul Claro */
+        .theme-blue {
+            --primary-color: #4A90E2;
+            --secondary-color: #7BB3F0;
+            --background-gradient: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            --sidebar-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #1976D2;
+            --connection-color: #4A90E2;
+        }
+
+        /* Tema Verde Institucional */
+        .theme-green {
+            --primary-color: #2E7D32;
+            --secondary-color: #4CAF50;
+            --background-gradient: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%);
+            --sidebar-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #1B5E20;
+            --connection-color: #2E7D32;
+        }
+
+        /* Tema Branco */
+        .theme-white {
+            --primary-color: #424242;
+            --secondary-color: #616161;
+            --background-gradient: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #212121;
+            --connection-color: #424242;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-gradient);
+            height: 100vh;
+            overflow: hidden;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 100vh;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.5);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .logo::before {
+            content: '🧠';
+            font-size: 28px;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover, .color-option.active {
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .custom-color-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .custom-color-picker {
+            width: 100%;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .custom-color-picker:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-color-picker::-webkit-color-swatch-wrapper {
+            padding: 0;
+            border-radius: 8px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .custom-color-picker::-webkit-color-swatch {
+            border: none;
+            border-radius: 6px;
+        }
+
+        .recent-colors-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .recent-colors-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .recent-color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .recent-color-option:hover {
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .recent-color-option.empty {
+            background: #f8f9fa;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .recent-color-option.empty:hover {
+            border-color: #999;
+            transform: none;
+        }
+
+        .shape-palette {
+            display: flex;
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        .shape-option {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .shape-option:hover, .shape-option.active {
+            border-color: #667eea;
+            transform: scale(1.1);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .shape-preview {
+            width: 24px;
+            height: 24px;
+            background: #667eea;
+            transition: all 0.2s ease;
+        }
+
+        .rectangle-preview {
+            border-radius: 4px;
+            width: 28px;
+            height: 18px;
+        }
+
+        .square-preview {
+            border-radius: 4px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .circle-preview {
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+        }
+
+        .ellipse-preview {
+            border-radius: 50%;
+            width: 24px;
+            height: 16px;
+        }
+
+
+        .node-shape-rectangle {
+            border-radius: 8px;
+            min-width: 120px;
+            min-height: 60px;
+            padding: 15px 20px;
+        }
+
+        .node-shape-square {
+            border-radius: 8px;
+            width: 80px;
+            height: 80px;
+            min-width: 60px;
+            min-height: 60px;
+            max-width: 200px;
+            max-height: 200px;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .node-shape-circle {
+            border-radius: 50% !important;
+            width: 80px;
+            height: 80px;
+            min-width: 60px;
+            min-height: 60px;
+            max-width: 200px;
+            max-height: 200px;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .node-shape-ellipse {
+            border-radius: 50%;
+            width: 100px;
+            height: 60px;
+            min-width: 80px;
+            min-height: 50px;
+            max-width: 300px;
+            max-height: 200px;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .node-shape-ellipse .node-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            padding: 8px;
+            box-sizing: border-box;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .node-shape-square .node-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            padding: 8px;
+            box-sizing: border-box;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .node-shape-circle .node-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            padding: 8px;
+            box-sizing: border-box;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .node-shape-ellipse .node-controls {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            display: none;
+            gap: 5px;
+            z-index: 1001;
+        }
+
+        .node-shape-circle .node-controls {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            display: none;
+            gap: 5px;
+            z-index: 1001;
+        }
+
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            cursor: grab;
+            background:
+                radial-gradient(circle at 20px 20px, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform-origin: 0 0;
+            transition: transform 0.2s ease;
+        }
+
+        .canvas:active {
+            cursor: grabbing;
+        }
+        
+        .canvas.panning {
+            cursor: grabbing;
+        }
+
+        .node {
+            position: absolute;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            cursor: move;
+            user-select: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+            text-align: center;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .node.node-shape-square {
+            padding: 0 !important;
+            border-radius: 8px !important;
+            width: 80px;
+            height: 80px;
+            min-width: 60px;
+            min-height: 60px;
+            max-width: 200px;
+            max-height: 200px;
+        }
+
+        .node.node-shape-ellipse {
+            padding: 0 !important;
+            border-radius: 50% !important;
+            width: 100px;
+            height: 60px;
+            min-width: 80px;
+            min-height: 50px;
+            max-width: 300px;
+            max-height: 200px;
+        }
+
+        .node.node-shape-circle {
+            padding: 0 !important;
+            border-radius: 50% !important;
+            width: 80px;
+            height: 80px;
+            min-width: 60px;
+            min-height: 60px;
+            max-width: 200px;
+            max-height: 200px;
+        }
+
+        .node:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .node.node-shape-square:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 8px !important;
+        }
+
+        .node.node-shape-ellipse:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 50% !important;
+        }
+
+        .node.node-shape-circle:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 50% !important;
+        }
+
+        .node.selected {
+            border-color: #667eea;
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .node.node-shape-square.selected {
+            border-color: #667eea;
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+            border-radius: 8px !important;
+        }
+
+        .node.node-shape-ellipse.selected {
+            border-color: #667eea;
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+            border-radius: 50% !important;
+        }
+
+        .node.node-shape-circle.selected {
+            border-color: #667eea;
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+            border-radius: 50% !important;
+        }
+
+        .node.editing {
+            border-color: #4CAF50;
+        }
+
+        .node.dragging {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            cursor: grabbing;
+            transition: none;
+        }
+
+        .node.node-shape-square.dragging {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            cursor: grabbing;
+            transition: none;
+            border-radius: 8px !important;
+        }
+
+        .node.node-shape-ellipse.dragging {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            cursor: grabbing;
+            transition: none;
+            border-radius: 50% !important;
+        }
+
+        .node.node-shape-circle.dragging {
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            cursor: grabbing;
+            transition: none;
+            border-radius: 50% !important;
+        }
+
+        .node.drag-placeholder {
+            opacity: 0.3;
+            transform: scale(0.95);
+        }
+
+        .node.resize-mode {
+            border-color: #2ed573;
+            box-shadow: 0 12px 40px rgba(46, 213, 115, 0.3);
+            cursor: nw-resize;
+        }
+
+        .node.node-shape-circle.resize-mode {
+            border-color: #2ed573;
+            box-shadow: 0 12px 40px rgba(46, 213, 115, 0.3);
+            cursor: nw-resize;
+            border-radius: 50% !important;
+        }
+
+        .node.resizing {
+            border-color: #2ed573;
+            box-shadow: 0 20px 60px rgba(46, 213, 115, 0.4);
+            cursor: nw-resize;
+        }
+
+        .node.node-shape-ellipse.resize-mode {
+            border-color: #2ed573;
+            box-shadow: 0 12px 40px rgba(46, 213, 115, 0.3);
+            cursor: nw-resize;
+            border-radius: 50% !important;
+        }
+
+        .node.node-shape-ellipse.resizing {
+            border-color: #2ed573;
+            box-shadow: 0 20px 60px rgba(46, 213, 115, 0.4);
+            cursor: nw-resize;
+            border-radius: 50% !important;
+        }
+
+        .node.node-shape-square.resize-mode {
+            border-color: #2ed573;
+            box-shadow: 0 12px 40px rgba(46, 213, 115, 0.3);
+            cursor: nw-resize;
+            border-radius: 8px !important;
+        }
+
+        .node.node-shape-square.resizing {
+            border-color: #2ed573;
+            box-shadow: 0 20px 60px rgba(46, 213, 115, 0.4);
+            cursor: nw-resize;
+            border-radius: 8px !important;
+        }
+
+        .node.node-shape-circle.resizing {
+            border-color: #2ed573;
+            box-shadow: 0 20px 60px rgba(46, 213, 115, 0.4);
+            cursor: nw-resize;
+            border-radius: 50% !important;
+        }
+
+        .node input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            width: 100%;
+            min-width: 50px;
+            max-width: 300px;
+        }
+
+        .node-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .connection {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connection-line {
+            stroke: var(--connection-color);
+            stroke-width: 3;
+            fill: none;
+            opacity: 0.7;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            transition: stroke 0.3s ease;
+        }
+
+        .node-controls {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            display: none;
+            gap: 5px;
+        }
+
+        .node.selected .node-controls {
+            display: flex;
+        }
+
+        .node-controls-expanded {
+            display: none;
+            gap: 5px;
+            animation: expandControls 0.3s ease;
+        }
+
+        .node-controls-expanded.show {
+            display: flex;
+        }
+
+        @keyframes expandControls {
+            from {
+                opacity: 0;
+                transform: translateX(-10px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .control-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn.settings {
+            background: #667eea;
+            color: white;
+            font-size: 14px;
+        }
+
+        .control-btn.settings:hover {
+            background: #5a6fd8;
+            transform: rotate(90deg);
+        }
+
+        .control-btn.delete {
+            background: #ff4757;
+            color: white;
+        }
+
+        .control-btn.connect {
+            background: #667eea;
+            color: white;
+        }
+
+        .control-btn.disconnect {
+            background: #ffa502;
+            color: white;
+        }
+
+        .control-btn.resize {
+            background: #2ed573;
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .stats {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .stats h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .signature {
+            width: 100%;
+            height: 120px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .signature-text {
+            text-align: center;
+        }
+
+        .signature-line1 {
+            margin: 0;
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .signature-line2 {
+            margin: 0;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.2;
+            margin-top: 2px;
+        }
+
+        .export-options {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .theme-selector {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .theme-selector h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .theme-option {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-option.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-default {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .theme-blue {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            color: #1976D2;
+        }
+
+        .theme-green {
+            background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+            color: #1B5E20;
+        }
+
+        .theme-white {
+            background: linear-gradient(135deg, #FAFAFA, #F5F5F5);
+            color: #212121;
+            border: 1px solid #E0E0E0;
+        }
+
+        .floating-toolbar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .zoom-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .zoom-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .zoom-level {
+            margin: 0 10px;
+            font-weight: 600;
+            color: #667eea;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .shape-selector {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            display: none;
+            z-index: 1000;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            animation: shapeSelectorAppear 0.3s ease;
+            min-width: 280px;
+        }
+
+        .shape-selector.show {
+            display: block;
+        }
+
+        .shape-selector h3 {
+            color: #667eea;
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .shape-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .shape-selector-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .shape-selector-option:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .shape-selector-option.selected {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .shape-selector-preview {
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .shape-selector-preview.rectangle {
+            border-radius: 8px;
+            width: 60px;
+            height: 35px;
+        }
+
+        .shape-selector-preview.square {
+            border-radius: 4px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .shape-selector-preview.circle {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+
+        .shape-selector-preview.ellipse {
+            border-radius: 50%;
+            width: 50px;
+            height: 30px;
+        }
+
+        .shape-selector-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #667eea;
+            text-align: center;
+        }
+
+
+        @keyframes shapeSelectorAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .disconnect-menu {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            display: none;
+            z-index: 1001;
+            border: 2px solid rgba(255, 165, 2, 0.3);
+            min-width: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .disconnect-menu.show {
+            display: block;
+            animation: shapeSelectorAppear 0.3s ease;
+        }
+
+        .disconnect-menu h4 {
+            color: #ffa502;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .disconnect-option {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 5px;
+            background: rgba(255, 165, 2, 0.05);
+            border: 1px solid transparent;
+        }
+
+        .disconnect-option:hover {
+            background: rgba(255, 165, 2, 0.15);
+            border-color: rgba(255, 165, 2, 0.3);
+            transform: translateX(2px);
+        }
+
+        .disconnect-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .disconnect-option-text {
+            font-size: 12px;
+            color: #666;
+            flex: 1;
+            margin-right: 8px;
+        }
+
+        .disconnect-option-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .disconnect-option-btn:hover {
+            background: #ff3742;
+            transform: scale(1.05);
+        }
+
+        /* Animações */
+        @keyframes nodeAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .node-appear {
+            animation: nodeAppear 0.4s ease;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+            }
+           
+            .node {
+                min-width: 100px;
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">Mapa Mental </div>
+           
+            <div class="toolbar">
+                <button class="btn btn-primary" onclick="addNode()">
+                    ➕ Adicionar Nó
+                </button>
+               
+                <button class="btn btn-secondary" onclick="clearCanvas()">
+                    🗑️ Limpar Tudo
+                </button>
+                
+                <!-- <button class="btn btn-secondary" onclick="adjustAllTextSizes()" title="Ajustar tamanho do texto de todos os nós">
+                    📝 Ajustar Texto
+                </button> -->
+               
+                <button class="btn btn-secondary" onclick="autoLayout()">
+                    ⚡ Layout Automático
+                </button>
+                <h4 style="margin-top: 20px; color: #667eea;">Formatos dos Nós</h4>
+                <div class="shape-palette">
+                    <div class="shape-option active" onclick="setNodeShape('rectangle')" title="Retangular">
+                        <div class="shape-preview rectangle-preview"></div>
+                    </div>
+                    <div class="shape-option" onclick="setNodeShape('square')" title="Quadrado">
+                        <div class="shape-preview square-preview"></div>
+                    </div>
+                    <div class="shape-option" onclick="setNodeShape('circle')" title="Circular">
+                        <div class="shape-preview circle-preview"></div>
+                    </div>
+                    <div class="shape-option" onclick="setNodeShape('ellipse')" title="Elipse">
+                        <div class="shape-preview ellipse-preview"></div>
+                    </div>
+                </div>
+                <h4 style="margin-top: 20px; color: #667eea;">Cores dos Nós</h4>
+                <div class="color-palette">
+                    <div class="color-option active" style="background: #ffffff;" onclick="setNodeColor('#ffffff')"></div>
+                    <div class="color-option" style="background: #ff4757;" onclick="setNodeColor('#ff4757')"></div>
+                    <div class="color-option" style="background: #2ed573;" onclick="setNodeColor('#2ed573')"></div>
+                    <div class="color-option" style="background: #3742fa;" onclick="setNodeColor('#3742fa')"></div>
+                    <div class="color-option" style="background: #ffa502;" onclick="setNodeColor('#ffa502')"></div>
+                    <div class="color-option" style="background: #ff6348;" onclick="setNodeColor('#ff6348')"></div>
+                    <div class="color-option" style="background: #2f3542;" onclick="setNodeColor('#2f3542')"></div>
+                    <div class="color-option" style="background: #ff9ff3;" onclick="setNodeColor('#ff9ff3')"></div>
+                </div>
+                
+                <h4 style="margin-top: 20px; color: #667eea;">Cor Personalizada</h4>
+                <div class="custom-color-section">
+                    <input type="color" id="customColorPicker" class="custom-color-picker" onchange="setCustomNodeColor(this.value)">
+                    <button class="btn btn-secondary" onclick="applyCustomColor()" style="margin-top: 10px; width: 100%;">
+                        🎨 Aplicar Cor
+                    </button>
+                    <div class="recent-colors-section">
+                        <div class="recent-colors-grid" id="recentColorsGrid">
+                        </div>
+                </div>
+                
+                
+                </div>
+               
+                
+               
+                <div class="export-options">
+                    <button class="btn btn-secondary" onclick="exportAsPNG()">
+                        📸 Exportar PNG
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportAsJSON()">
+                        💾 Salvar Projeto
+                    </button>
+                    <button class="btn btn-secondary" onclick="importJSON()">
+                        📁 Carregar Projeto
+                    </button>
+                </div>
+
+                <div class="theme-selector">
+                    <h4>🎨 Temas</h4>
+                    <div class="theme-options">
+                        <div class="theme-option theme-default active" onclick="changeTheme('default')" data-theme="default">
+                            Padrão
+                        </div>
+                        <div class="theme-option theme-blue" onclick="changeTheme('blue')" data-theme="blue">
+                            Azul Claro
+                        </div>
+                        <div class="theme-option theme-green" onclick="changeTheme('green')" data-theme="green">
+                            Verde
+                        </div>
+                        <div class="theme-option theme-white" onclick="changeTheme('white')" data-theme="white">
+                            Branco
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+            <div class="stats">
+                <h3>Estatísticas</h3>
+                <div class="stat-item">
+                    <span>Nós:</span>
+                    <span id="nodeCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Conexões:</span>
+                    <span id="connectionCount">0</span>
+                </div>
+            </div>
+           
+            <div class="signature">
+                <div class="signature-text">
+                    <div class="signature-line1">S(i)S</div>
+                    <div class="signature-line2">Morphyro</div>
+
+                </div>
+            </div>
+        </div>
+       
+        <div class="canvas-container">
+            <div class="floating-toolbar">
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="zoomOut()">−</button>
+                    <div class="zoom-level" id="zoomLevel">100%</div>
+                    <button class="zoom-btn" onclick="zoomIn()">+</button>
+                    <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">↺</button>
+                </div>
+                <button class="btn btn-secondary" onclick="centerView()">🎯 Centralizar</button>
+            </div>
+           
+            <div class="canvas" id="canvas">
+                <svg id="connections" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+                </svg>
+            </div>
+            
+            <!-- Shape Selector Modal -->
+            <div class="shape-selector" id="shapeSelector">
+                <h3>Escolha o formato do nó</h3>
+                <div class="shape-selector-grid">
+                    <div class="shape-selector-option" data-shape="rectangle">
+                        <div class="shape-selector-preview rectangle"></div>
+                        <div class="shape-selector-label">Retangular</div>
+                    </div>
+                    <div class="shape-selector-option" data-shape="square">
+                        <div class="shape-selector-preview square"></div>
+                        <div class="shape-selector-label">Quadrado</div>
+                    </div>
+                    <div class="shape-selector-option" data-shape="circle">
+                        <div class="shape-selector-preview circle"></div>
+                        <div class="shape-selector-label">Circular</div>
+                    </div>
+                    <div class="shape-selector-option" data-shape="ellipse">
+                        <div class="shape-selector-preview ellipse"></div>
+                        <div class="shape-selector-label">Elipse</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disconnect Menu -->
+            <div class="disconnect-menu" id="disconnectMenu">
+                <h4>Remover Ligações</h4>
+                <div id="disconnectOptions"></div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="handleFileLoad(event)">
+
+    <script>
+        class MindMapApp {
+            constructor() {
+                this.nodes = [];
+                this.connections = [];
+                this.selectedNode = null;
+                this.draggedNode = null;
+                this.isDragging = false;
+                this.dragOffset = { x: 0, y: 0 };
+                this.currentColor = '#ffffff';
+                this.currentShape = 'rectangle';
+                this.zoomLevel = 1;
+                this.panOffset = { x: 0, y: 0 };
+                this.nextNodeId = 1;
+                this.connectingMode = false;
+                this.sourceNode = null;
+                this.shapeSelectorVisible = false;
+                this.selectedShapeForNewNode = 'rectangle';
+                this.shapeSelectorClickPosition = { x: 0, y: 0 };
+                this.disconnectMenuVisible = false;
+                this.currentNodeConnections = [];
+                this.resizeMode = false;
+                this.resizingNode = null;
+                this.isResizing = false;
+                this.resizeStartX = 0;
+                this.resizeStartY = 0;
+                this.initialNodeWidth = 0;
+                this.initialNodeHeight = 0;
+                this.customColor = '#ffffff';
+                this.recentColors = [];
+                this.currentTheme = 'default';
+                this.controlsMenuVisible = false;
+                this.activeControlsMenu = null;
+                
+                // Sistema de drag and drop melhorado
+                this.isPanning = false;
+                this.panStartX = 0;
+                this.panStartY = 0;
+                this.initialPanOffsetX = 0;
+                this.initialPanOffsetY = 0;
+                this.isNodeDragging = false;
+                this.nodeDragStartX = 0;
+                this.nodeDragStartY = 0;
+                this.nodeInitialX = 0;
+                this.nodeInitialY = 0;
+               
+                this.init();
+            }
+           
+            init() {
+                this.setupEventListeners();
+                this.setupShapeSelector();
+                this.addInitialNode();
+                this.updateStats();
+                this.updateRecentColorsDisplay();
+                this.loadTheme();
+            }
+           
+            setupEventListeners() {
+                const canvas = document.getElementById('canvas');
+                const canvasContainer = document.querySelector('.canvas-container');
+               
+                // Eventos de mouse para o canvas container (área expandida)
+                canvasContainer.addEventListener('mousedown', this.handleMouseDown.bind(this));
+                canvasContainer.addEventListener('mousemove', this.handleMouseMove.bind(this));
+                canvasContainer.addEventListener('mouseup', this.handleMouseUp.bind(this));
+                canvasContainer.addEventListener('dblclick', this.handleDoubleClick.bind(this));
+                canvasContainer.addEventListener('wheel', this.handleWheel.bind(this));
+                
+                // Eventos de touch para dispositivos móveis
+                canvasContainer.addEventListener('touchstart', this.handleTouchStart.bind(this));
+                canvasContainer.addEventListener('touchmove', this.handleTouchMove.bind(this));
+                canvasContainer.addEventListener('touchend', this.handleTouchEnd.bind(this));
+               
+                document.addEventListener('keydown', this.handleKeyDown.bind(this));
+                document.addEventListener('paste', this.handlePaste.bind(this));
+               
+                // Fechar seletor ao clicar fora
+                document.addEventListener('click', (e) => {
+                    if (this.shapeSelectorVisible && !e.target.closest('.shape-selector')) {
+                        this.hideShapeSelector();
+                    }
+                    if (this.disconnectMenuVisible && !e.target.closest('.disconnect-menu') && !e.target.closest('.control-btn.disconnect')) {
+                        this.hideDisconnectMenu();
+                    }
+                    if (this.controlsMenuVisible && !e.target.closest('.node-controls')) {
+                        this.hideControlsMenu();
+                    }
+                });
+               
+                // Menu de contexto personalizado
+                canvasContainer.addEventListener('contextmenu', this.handleRightClick.bind(this));
+            }
+
+            setupShapeSelector() {
+                const shapeSelector = document.getElementById('shapeSelector');
+                const shapeOptions = shapeSelector.querySelectorAll('.shape-selector-option');
+
+                // Criar nó automaticamente ao clicar na forma
+                shapeOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        this.selectedShapeForNewNode = option.dataset.shape;
+                        this.createNodeWithSelectedShape();
+                        this.hideShapeSelector();
+                    });
+                });
+
+                // Fechar ao clicar fora
+                shapeSelector.addEventListener('click', (e) => {
+                    if (e.target === shapeSelector) {
+                        this.hideShapeSelector();
+                    }
+                });
+            }
+
+            showShapeSelector(x, y) {
+                const shapeSelector = document.getElementById('shapeSelector');
+                const canvasContainer = document.querySelector('.canvas-container');
+                const containerRect = canvasContainer.getBoundingClientRect();
+                
+                // Posicionar o seletor próximo ao clique
+                const selectorWidth = 280;
+                const selectorHeight = 180;
+                
+                let posX = x - containerRect.left;
+                let posY = y - containerRect.top;
+                
+                // Ajustar posição se sair da tela
+                if (posX + selectorWidth > containerRect.width) {
+                    posX = containerRect.width - selectorWidth - 20;
+                }
+                if (posY + selectorHeight > containerRect.height) {
+                    posY = containerRect.height - selectorHeight - 20;
+                }
+                if (posX < 20) posX = 20;
+                if (posY < 20) posY = 20;
+                
+                shapeSelector.style.left = posX + 'px';
+                shapeSelector.style.top = posY + 'px';
+                shapeSelector.classList.add('show');
+                this.shapeSelectorVisible = true;
+                this.shapeSelectorClickPosition = { x: posX, y: posY };
+            }
+
+            hideShapeSelector() {
+                const shapeSelector = document.getElementById('shapeSelector');
+                shapeSelector.classList.remove('show');
+                this.shapeSelectorVisible = false;
+            }
+
+            createNodeWithSelectedShape() {
+                // Temporariamente alterar a forma atual
+                const originalShape = this.currentShape;
+                this.currentShape = this.selectedShapeForNewNode;
+                
+                // Criar nó na posição do clique
+                this.addNode(
+                    this.shapeSelectorClickPosition.x,
+                    this.shapeSelectorClickPosition.y,
+                    'Nova Ideia'
+                );
+                
+                // Restaurar forma original
+                this.currentShape = originalShape;
+            }
+
+            showDisconnectMenu(nodeId) {
+                const node = this.nodes.find(n => n.id === nodeId);
+                if (!node) return;
+
+                // Encontrar todas as conexões deste nó
+                const connections = this.connections.filter(conn => 
+                    conn.from.id === nodeId || conn.to.id === nodeId
+                );
+
+                if (connections.length === 0) {
+                    alert('Este nó não possui ligações para remover.');
+                    return;
+                }
+
+                const disconnectMenu = document.getElementById('disconnectMenu');
+                const disconnectOptions = document.getElementById('disconnectOptions');
+                
+                // Limpar opções anteriores
+                disconnectOptions.innerHTML = '';
+
+                // Armazenar as conexões para referência
+                this.currentNodeConnections = connections;
+
+                // Adicionar opção para cada conexão
+                connections.forEach((conn, index) => {
+                    const otherNode = conn.from.id === nodeId ? conn.to : conn.from;
+                    const option = document.createElement('div');
+                    option.className = 'disconnect-option';
+                    option.innerHTML = `
+                        <div class="disconnect-option-text" id="connection-text-${index}">${otherNode.text}</div>
+                        <button class="disconnect-option-btn" onclick="app.removeConnectionByIndex(${index})">Remover</button>
+                    `;
+                    disconnectOptions.appendChild(option);
+                });
+
+                // Posicionar o menu próximo ao nó
+                const nodeRect = node.element.getBoundingClientRect();
+                const canvasContainer = document.querySelector('.canvas-container');
+                const containerRect = canvasContainer.getBoundingClientRect();
+                
+                let posX = nodeRect.right - containerRect.left + 10;
+                let posY = nodeRect.top - containerRect.top;
+
+                // Ajustar posição se sair da tela
+                const menuWidth = 200;
+                const menuHeight = Math.min(200, connections.length * 40 + 60);
+                
+                if (posX + menuWidth > containerRect.width) {
+                    posX = nodeRect.left - containerRect.left - menuWidth - 10;
+                }
+                if (posY + menuHeight > containerRect.height) {
+                    posY = containerRect.height - menuHeight - 20;
+                }
+                if (posX < 20) posX = 20;
+                if (posY < 20) posY = 20;
+
+                disconnectMenu.style.left = posX + 'px';
+                disconnectMenu.style.top = posY + 'px';
+                disconnectMenu.classList.add('show');
+                this.disconnectMenuVisible = true;
+            }
+
+            hideDisconnectMenu() {
+                const disconnectMenu = document.getElementById('disconnectMenu');
+                disconnectMenu.classList.remove('show');
+                this.disconnectMenuVisible = false;
+            }
+
+            updateDisconnectMenuText() {
+                if (!this.disconnectMenuVisible || !this.currentNodeConnections) return;
+
+                this.currentNodeConnections.forEach((conn, index) => {
+                    const textElement = document.getElementById(`connection-text-${index}`);
+                    if (textElement) {
+                        // Encontrar o nó atual (o que está selecionado)
+                        const currentNode = this.selectedNode;
+                        if (currentNode) {
+                            const otherNode = conn.from.id === currentNode.id ? conn.to : conn.from;
+                            textElement.textContent = otherNode.text;
+                        }
+                    }
+                });
+            }
+
+            updateAllDisconnectMenus() {
+                // Atualizar todos os menus de desconexão abertos
+                if (this.disconnectMenuVisible) {
+                    this.updateDisconnectMenuText();
+                }
+                
+                // Atualizar também os botões de desconexão em todos os nós
+                this.updateNodeControls();
+            }
+
+            removeConnectionByIndex(connectionIndex) {
+                if (!this.currentNodeConnections || connectionIndex < 0 || connectionIndex >= this.currentNodeConnections.length) {
+                    console.error('Índice de conexão inválido');
+                    return;
+                }
+
+                const connectionToRemove = this.currentNodeConnections[connectionIndex];
+                
+                // Encontrar o índice real no array principal
+                const realIndex = this.connections.findIndex(conn => 
+                    (conn.from.id === connectionToRemove.from.id && conn.to.id === connectionToRemove.to.id) ||
+                    (conn.from.id === connectionToRemove.to.id && conn.to.id === connectionToRemove.from.id)
+                );
+
+                if (realIndex !== -1) {
+                    this.connections.splice(realIndex, 1);
+                    this.updateConnections();
+                    this.updateStats();
+                    this.updateNodeControls();
+                    this.hideDisconnectMenu();
+                    
+                    // Mostrar mensagem de sucesso
+                    console.log('Conexão removida com sucesso!');
+                } else {
+                    console.error('Não foi possível encontrar a conexão para remover');
+                }
+            }
+
+            toggleResizeMode(nodeId) {
+                const node = this.nodes.find(n => n.id === nodeId);
+                if (!node) return;
+
+                if (this.resizeMode && this.resizingNode) {
+                    if (this.resizingNode.id === nodeId) {
+                        this.resizeMode = false;
+                        this.resizingNode = null;
+                        node.element.classList.remove('resize-mode');
+                    } else {
+                        // Trocar para outro nó
+                        this.resizingNode.element.classList.remove('resize-mode');
+                        this.resizeMode = true;
+                        this.resizingNode = node;
+                        node.element.classList.add('resize-mode');
+                    }
+                } else {
+                    this.resizeMode = true;
+                    this.resizingNode = node;
+                    node.element.classList.add('resize-mode');
+                }
+                
+                // Log para debug
+                console.log('Modo resize ativado para nó:', nodeId, 'Forma:', node.shape);
+                console.log('Tamanho atual:', node.element.offsetWidth + 'x' + node.element.offsetHeight);
+            }
+           
+            addInitialNode() {
+                this.addNode(400, 300, 'Ideia Central');
+            }
+           
+            addNode(x = null, y = null, text = 'Nova Ideia', mediaData = null) {
+                const canvasContainer = document.querySelector('.canvas-container');
+                const rect = canvasContainer.getBoundingClientRect();
+               
+                if (x === null) x = (rect.width / 2) + Math.random() * 200 - 100;
+                if (y === null) y = (rect.height / 2) + Math.random() * 200 - 100;
+               
+                const node = {
+                    id: this.nextNodeId++,
+                    x: x,
+                    y: y,
+                    text: text,
+                    color: this.currentColor,
+                    shape: this.currentShape,
+                    mediaData: mediaData,
+                    element: null
+                };
+               
+                this.nodes.push(node);
+                this.createNodeElement(node);
+                this.updateStats();
+            }
+           
+            createNodeElement(node) {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = `node node-appear node-shape-${node.shape}`;
+                nodeEl.style.left = node.x + 'px';
+                nodeEl.style.top = node.y + 'px';
+                nodeEl.style.backgroundColor = node.color;
+                
+                let content = '';
+                if (node.mediaData) {
+                    if (node.mediaData.type === 'image') {
+                        content = `<img src="${node.mediaData.data}" style="max-width: 100px; max-height: 100px; border-radius: 8px; margin-bottom: 5px;" alt="Imagem">`;
+                    } else if (node.mediaData.type === 'video') {
+                        content = `<video src="${node.mediaData.data}" style="max-width: 100px; max-height: 100px; border-radius: 8px; margin-bottom: 5px;" controls></video>`;
+                    }
+                }
+                
+                if (node.text) {
+                    content += node.text;
+                }
+                
+                nodeEl.innerHTML = `
+                    <div class="node-content">${content}</div>
+                    <div class="node-controls">
+                        <button class="control-btn settings" onclick="app.toggleControlsExpansion(${node.id})" title="Configurações">⚙️</button>
+                        <div class="node-controls-expanded" id="controls-expanded-${node.id}">
+                            <button class="control-btn connect" onclick="app.toggleConnectMode(${node.id})" title="Conectar">🔗</button>
+                            <button class="control-btn disconnect" onclick="app.showDisconnectMenu(${node.id})" title="Remover Ligações" style="display: none;">✂️</button>
+                            <button class="control-btn resize" onclick="app.toggleResizeMode(${node.id})" title="Redimensionar">📏</button>
+                            <button class="control-btn delete" onclick="app.deleteNode(${node.id})" title="Deletar">×</button>
+                        </div>
+                    </div>
+                `;
+               
+                node.element = nodeEl;
+                document.getElementById('canvas').appendChild(nodeEl);
+                
+                // Ajustar tamanho do texto após criar o elemento
+                setTimeout(() => {
+                    this.adjustNodeTextSize(node);
+                }, 100);
+            }
+           
+            handleMouseDown(e) {
+                if (e.button !== 0) return; // Apenas botão esquerdo do mouse
+                
+                const node = e.target.closest('.node');
+               
+                if (node) {
+                    const nodeData = this.nodes.find(n => n.element === node);
+                   
+                    if (this.connectingMode && this.sourceNode && nodeData.id !== this.sourceNode.id) {
+                        this.createConnection(this.sourceNode, nodeData);
+                        this.connectingMode = false;
+                        this.sourceNode = null;
+                        return;
+                    }
+
+                    if (this.resizeMode && this.resizingNode && nodeData.id === this.resizingNode.id) {
+                        this.isResizing = true;
+                        this.resizeStartX = e.clientX;
+                        this.resizeStartY = e.clientY;
+                        const rect = node.getBoundingClientRect();
+                        this.initialNodeWidth = rect.width;
+                        this.initialNodeHeight = rect.height;
+                        node.classList.add('resizing');
+                        
+                        // Para círculo, elipse e quadrado, remover as restrições de tamanho durante redimensionamento
+                        if (nodeData.shape === 'circle') {
+                            node.style.minWidth = '60px';
+                            node.style.minHeight = '60px';
+                            node.style.maxWidth = '200px';
+                            node.style.maxHeight = '200px';
+                        } else if (nodeData.shape === 'ellipse') {
+                            node.style.minWidth = '80px';
+                            node.style.minHeight = '50px';
+                            node.style.maxWidth = '300px';
+                            node.style.maxHeight = '200px';
+                        } else if (nodeData.shape === 'square') {
+                            node.style.minWidth = '60px';
+                            node.style.minHeight = '60px';
+                            node.style.maxWidth = '200px';
+                            node.style.maxHeight = '200px';
+                        }
+                        return;
+                    }
+                   
+                    this.selectNode(nodeData);
+                    this.isNodeDragging = true;
+                    this.nodeDragStartX = e.clientX;
+                    this.nodeDragStartY = e.clientY;
+                    this.nodeInitialX = nodeData.x;
+                    this.nodeInitialY = nodeData.y;
+                   
+                    // Adicionar classe de drag para feedback visual
+                    node.classList.add('dragging');
+                } else {
+                    this.deselectAll();
+                    
+                    // Sair do modo de redimensionamento se estiver ativo
+                    if (this.resizeMode) {
+                        this.resizeMode = false;
+                        if (this.resizingNode) {
+                            this.resizingNode.element.classList.remove('resize-mode');
+                            this.resizingNode = null;
+                        }
+                    }
+                    
+                    // Iniciar pan do canvas
+                    this.isPanning = true;
+                    this.panStartX = e.clientX;
+                    this.panStartY = e.clientY;
+                    this.initialPanOffsetX = this.panOffset.x;
+                    this.initialPanOffsetY = this.panOffset.y;
+                    
+                    // Adicionar classe de panning
+                    const canvas = document.getElementById('canvas');
+                    canvas.classList.add('panning');
+                   
+                    if (e.shiftKey) {
+                        const canvasContainer = document.querySelector('.canvas-container');
+                        const rect = canvasContainer.getBoundingClientRect();
+                        this.addNode(e.clientX - rect.left, e.clientY - rect.top);
+                    }
+                }
+               
+                e.preventDefault();
+            }
+           
+            handleMouseMove(e) {
+                if (this.isResizing && this.resizingNode) {
+                    const dx = e.clientX - this.resizeStartX;
+                    const dy = e.clientY - this.resizeStartY;
+                    
+                    if (this.resizingNode.shape === 'circle') {
+                        // Para círculo, usar a média de dx e dy para manter formato circular
+                        const avgDelta = (dx + dy) / 2;
+                        const newSize = Math.max(60, Math.min(200, this.initialNodeWidth + avgDelta));
+                        
+                        // Aplicar o novo tamanho
+                        this.resizingNode.element.style.width = newSize + 'px';
+                        this.resizingNode.element.style.height = newSize + 'px';
+                        
+                        // Forçar o border-radius para manter formato circular
+                        this.resizingNode.element.style.borderRadius = '50%';
+                        
+                        // Ajustar tamanho do texto
+                        this.adjustNodeTextSize(this.resizingNode);
+                        
+                        console.log('Redimensionando círculo para:', newSize + 'px');
+                    } else if (this.resizingNode.shape === 'ellipse') {
+                        // Para elipse, redimensionar normalmente mantendo proporção
+                        const newWidth = Math.max(80, this.initialNodeWidth + dx);
+                        const newHeight = Math.max(50, this.initialNodeHeight + dy);
+                        
+                        // Forçar as dimensões
+                        this.resizingNode.element.style.width = newWidth + 'px';
+                        this.resizingNode.element.style.height = newHeight + 'px';
+                        this.resizingNode.element.style.minWidth = newWidth + 'px';
+                        this.resizingNode.element.style.minHeight = newHeight + 'px';
+                        this.resizingNode.element.style.maxWidth = newWidth + 'px';
+                        this.resizingNode.element.style.maxHeight = newHeight + 'px';
+                        
+                        // Manter formato elíptico
+                        this.resizingNode.element.style.borderRadius = '50%';
+                        
+                        // Ajustar tamanho do texto
+                        this.adjustNodeTextSize(this.resizingNode);
+                        
+                        console.log('Redimensionando elipse para:', newWidth + 'x' + newHeight + 'px');
+                    } else if (this.resizingNode.shape === 'square') {
+                        // Para quadrado, usar a média de dx e dy para manter formato quadrado
+                        const avgDelta = (dx + dy) / 2;
+                        const newSize = Math.max(60, Math.min(200, this.initialNodeWidth + avgDelta));
+                        
+                        // Forçar as dimensões
+                        this.resizingNode.element.style.width = newSize + 'px';
+                        this.resizingNode.element.style.height = newSize + 'px';
+                        this.resizingNode.element.style.minWidth = newSize + 'px';
+                        this.resizingNode.element.style.minHeight = newSize + 'px';
+                        this.resizingNode.element.style.maxWidth = newSize + 'px';
+                        this.resizingNode.element.style.maxHeight = newSize + 'px';
+                        
+                        // Manter formato quadrado
+                        this.resizingNode.element.style.borderRadius = '8px';
+                        
+                        // Ajustar tamanho do texto
+                        this.adjustNodeTextSize(this.resizingNode);
+                        
+                        console.log('Redimensionando quadrado para:', newSize + 'x' + newSize + 'px');
+                    } else {
+                        // Para outras formas, comportamento normal
+                        const newWidth = Math.max(80, this.initialNodeWidth + dx);
+                        const newHeight = Math.max(40, this.initialNodeHeight + dy);
+                        
+                        this.resizingNode.element.style.width = newWidth + 'px';
+                        this.resizingNode.element.style.height = newHeight + 'px';
+                        
+                        // Ajustar tamanho do texto
+                        this.adjustNodeTextSize(this.resizingNode);
+                    }
+                    
+                    this.updateConnections();
+                } else if (this.isNodeDragging && this.selectedNode) {
+                    const dx = e.clientX - this.nodeDragStartX;
+                    const dy = e.clientY - this.nodeDragStartY;
+                    
+                    this.selectedNode.x = this.nodeInitialX + dx / this.zoomLevel;
+                    this.selectedNode.y = this.nodeInitialY + dy / this.zoomLevel;
+                    
+                    this.updateNodePosition(this.selectedNode);
+                    this.updateConnections();
+                } else if (this.isPanning) {
+                    const dx = e.clientX - this.panStartX;
+                    const dy = e.clientY - this.panStartY;
+                    
+                    this.panOffset.x = this.initialPanOffsetX + dx;
+                    this.panOffset.y = this.initialPanOffsetY + dy;
+                    
+                    this.updateCanvasTransform();
+                }
+            }
+           
+            handleMouseUp(e) {
+                if (this.isResizing && this.resizingNode) {
+                    this.resizingNode.element.classList.remove('resizing');
+                    
+                    // Salvar o tamanho final do círculo ou elipse
+                    if (this.resizingNode.shape === 'circle') {
+                        const finalSize = this.resizingNode.element.offsetWidth;
+                        this.resizingNode.element.style.width = finalSize + 'px';
+                        this.resizingNode.element.style.height = finalSize + 'px';
+                        this.resizingNode.element.style.minWidth = finalSize + 'px';
+                        this.resizingNode.element.style.minHeight = finalSize + 'px';
+                        this.resizingNode.element.style.maxWidth = finalSize + 'px';
+                        this.resizingNode.element.style.maxHeight = finalSize + 'px';
+                        this.resizingNode.element.style.borderRadius = '50%';
+                        
+                        console.log('Tamanho final do círculo:', finalSize + 'px');
+                    } else if (this.resizingNode.shape === 'ellipse') {
+                        const finalWidth = this.resizingNode.element.offsetWidth;
+                        const finalHeight = this.resizingNode.element.offsetHeight;
+                        this.resizingNode.element.style.width = finalWidth + 'px';
+                        this.resizingNode.element.style.height = finalHeight + 'px';
+                        this.resizingNode.element.style.minWidth = finalWidth + 'px';
+                        this.resizingNode.element.style.minHeight = finalHeight + 'px';
+                        this.resizingNode.element.style.maxWidth = finalWidth + 'px';
+                        this.resizingNode.element.style.maxHeight = finalHeight + 'px';
+                        this.resizingNode.element.style.borderRadius = '50%';
+                        
+                        console.log('Tamanho final da elipse:', finalWidth + 'x' + finalHeight + 'px');
+                    } else if (this.resizingNode.shape === 'square') {
+                        const finalSize = this.resizingNode.element.offsetWidth;
+                        this.resizingNode.element.style.width = finalSize + 'px';
+                        this.resizingNode.element.style.height = finalSize + 'px';
+                        this.resizingNode.element.style.minWidth = finalSize + 'px';
+                        this.resizingNode.element.style.minHeight = finalSize + 'px';
+                        this.resizingNode.element.style.maxWidth = finalSize + 'px';
+                        this.resizingNode.element.style.maxHeight = finalSize + 'px';
+                        this.resizingNode.element.style.borderRadius = '8px';
+                        
+                        console.log('Tamanho final do quadrado:', finalSize + 'x' + finalSize + 'px');
+                    }
+                    
+                    this.isResizing = false;
+                } else if (this.selectedNode && this.isNodeDragging) {
+                    this.selectedNode.element.classList.remove('dragging');
+                }
+                this.isNodeDragging = false;
+                this.isPanning = false;
+                
+                // Remover classe de panning
+                const canvas = document.getElementById('canvas');
+                canvas.classList.remove('panning');
+            }
+            
+            handleTouchStart(e) {
+                if (e.touches.length !== 1) return;
+                
+                const touch = e.touches[0];
+                const node = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.node');
+               
+                if (node) {
+                    const nodeData = this.nodes.find(n => n.element === node);
+                   
+                    if (this.connectingMode && this.sourceNode && nodeData.id !== this.sourceNode.id) {
+                        this.createConnection(this.sourceNode, nodeData);
+                        this.connectingMode = false;
+                        this.sourceNode = null;
+                        return;
+                    }
+                   
+                    this.selectNode(nodeData);
+                    this.isNodeDragging = true;
+                    this.nodeDragStartX = touch.clientX;
+                    this.nodeDragStartY = touch.clientY;
+                    this.nodeInitialX = nodeData.x;
+                    this.nodeInitialY = nodeData.y;
+                   
+                    node.classList.add('dragging');
+                } else {
+                    this.deselectAll();
+                    
+                    // Sair do modo de redimensionamento se estiver ativo
+                    if (this.resizeMode) {
+                        this.resizeMode = false;
+                        if (this.resizingNode) {
+                            this.resizingNode.element.classList.remove('resize-mode');
+                            this.resizingNode = null;
+                        }
+                    }
+                    
+                    this.isPanning = true;
+                    this.panStartX = touch.clientX;
+                    this.panStartY = touch.clientY;
+                    this.initialPanOffsetX = this.panOffset.x;
+                    this.initialPanOffsetY = this.panOffset.y;
+                    
+                    // Adicionar classe de panning
+                    const canvas = document.getElementById('canvas');
+                    canvas.classList.add('panning');
+                }
+               
+                e.preventDefault();
+            }
+            
+            handleTouchMove(e) {
+                if (e.touches.length !== 1) return;
+                
+                const touch = e.touches[0];
+                
+                if (this.isNodeDragging && this.selectedNode) {
+                    const dx = touch.clientX - this.nodeDragStartX;
+                    const dy = touch.clientY - this.nodeDragStartY;
+                    
+                    this.selectedNode.x = this.nodeInitialX + dx / this.zoomLevel;
+                    this.selectedNode.y = this.nodeInitialY + dy / this.zoomLevel;
+                    
+                    this.updateNodePosition(this.selectedNode);
+                    this.updateConnections();
+                } else if (this.isPanning) {
+                    const dx = touch.clientX - this.panStartX;
+                    const dy = touch.clientY - this.panStartY;
+                    
+                    this.panOffset.x = this.initialPanOffsetX + dx;
+                    this.panOffset.y = this.initialPanOffsetY + dy;
+                    
+                    this.updateCanvasTransform();
+                }
+                
+                e.preventDefault();
+            }
+            
+            handleTouchEnd(e) {
+                if (this.selectedNode && this.isNodeDragging) {
+                    this.selectedNode.element.classList.remove('dragging');
+                }
+                this.isNodeDragging = false;
+                this.isPanning = false;
+                
+                // Remover classe de panning
+                const canvas = document.getElementById('canvas');
+                canvas.classList.remove('panning');
+            }
+           
+            handleDoubleClick(e) {
+                const node = e.target.closest('.node');
+                if (node) {
+                    const nodeData = this.nodes.find(n => n.element === node);
+                    this.editNode(nodeData);
+                }
+            }
+           
+            handleWheel(e) {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                const oldZoom = this.zoomLevel;
+                this.zoomLevel *= delta;
+                this.zoomLevel = Math.max(0.1, Math.min(3, this.zoomLevel));
+                
+                // Ajustar pan offset para zoom no ponto do mouse
+                const rect = e.target.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                const zoomRatio = this.zoomLevel / oldZoom;
+                this.panOffset.x = mouseX - (mouseX - this.panOffset.x) * zoomRatio;
+                this.panOffset.y = mouseY - (mouseY - this.panOffset.y) * zoomRatio;
+                
+                this.updateZoom();
+            }
+           
+            handleKeyDown(e) {
+                if (e.key === 'Delete' && this.selectedNode) {
+                    this.deleteNode(this.selectedNode.id);
+                } else if (e.key === 'Escape') {
+                    this.connectingMode = false;
+                    this.sourceNode = null;
+                    this.resizeMode = false;
+                    this.resizingNode = null;
+                    this.deselectAll();
+                    this.hideShapeSelector();
+                    this.hideDisconnectMenu();
+                    this.hideControlsMenu();
+                } else if (e.key === 'Enter' && this.selectedNode) {
+                    this.editNode(this.selectedNode);
+                }
+            }
+
+            handleRightClick(e) {
+                e.preventDefault();
+                
+                // Verificar se clicou em um nó
+                const node = e.target.closest('.node');
+                if (node) {
+                    // Se clicou em um nó, não mostrar o seletor
+                    return;
+                }
+                
+                // Mostrar o seletor de formas na posição do clique
+                this.showShapeSelector(e.clientX, e.clientY);
+            }
+
+            handlePaste(e) {
+                const items = e.clipboardData.items;
+                for (let item of items) {
+                    if (item.type.indexOf('image') !== -1) {
+                        const file = item.getAsFile();
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const canvasContainer = document.querySelector('.canvas-container');
+                            const rect = canvasContainer.getBoundingClientRect();
+                            const x = rect.width / 2 + Math.random() * 200 - 100;
+                            const y = rect.height / 2 + Math.random() * 200 - 100;
+                            
+                            this.addNode(x, y, '', {
+                                type: 'image',
+                                data: event.target.result
+                            });
+                        };
+                        reader.readAsDataURL(file);
+                        e.preventDefault();
+                    } else if (item.type.indexOf('video') !== -1) {
+                        const file = item.getAsFile();
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const canvasContainer = document.querySelector('.canvas-container');
+                            const rect = canvasContainer.getBoundingClientRect();
+                            const x = rect.width / 2 + Math.random() * 200 - 100;
+                            const y = rect.height / 2 + Math.random() * 200 - 100;
+                            
+                            this.addNode(x, y, 'Vídeo Colado', {
+                                type: 'video',
+                                data: event.target.result
+                            });
+                        };
+                        reader.readAsDataURL(file);
+                        e.preventDefault();
+                    }
+                }
+            }
+           
+            selectNode(node) {
+                this.deselectAll();
+                this.selectedNode = node;
+                node.element.classList.add('selected');
+            }
+           
+            deselectAll() {
+                this.nodes.forEach(node => {
+                    node.element.classList.remove('selected');
+                });
+                this.selectedNode = null;
+                
+                // Sair do modo de redimensionamento se estiver ativo
+                if (this.resizeMode) {
+                    this.resizeMode = false;
+                    if (this.resizingNode) {
+                        this.resizingNode.element.classList.remove('resize-mode');
+                        this.resizingNode = null;
+                    }
+                }
+            }
+           
+            editNode(node) {
+                const originalText = node.text;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = originalText;
+                input.className = 'node-edit';
+               
+                node.element.innerHTML = '';
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'node-content';
+                contentDiv.appendChild(input);
+                node.element.appendChild(contentDiv);
+                node.element.classList.add('editing');
+               
+                input.focus();
+                input.select();
+               
+                const finishEdit = () => {
+                    const newText = input.value || originalText;
+                    node.text = newText;
+                    node.element.classList.remove('editing');
+                    node.element.innerHTML = `
+                        <div class="node-content">${newText}</div>
+                        <div class="node-controls">
+                            <button class="control-btn settings" onclick="app.toggleControlsExpansion(${node.id})" title="Configurações">⚙️</button>
+                            <div class="node-controls-expanded" id="controls-expanded-${node.id}">
+                                <button class="control-btn connect" onclick="app.toggleConnectMode(${node.id})" title="Conectar">🔗</button>
+                                <button class="control-btn disconnect" onclick="app.showDisconnectMenu(${node.id})" title="Remover Ligações" style="display: none;">✂️</button>
+                                <button class="control-btn resize" onclick="app.toggleResizeMode(${node.id})" title="Redimensionar">📏</button>
+                                <button class="control-btn delete" onclick="app.deleteNode(${node.id})" title="Deletar">×</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Atualizar menu de desconexão se estiver aberto
+                    this.updateDisconnectMenuText();
+                    
+                    // Ajustar tamanho do texto após edição
+                    setTimeout(() => {
+                        this.adjustNodeTextSize(node);
+                    }, 100);
+                    
+                    // Deselecionar o nó após edição
+                    this.deselectAll();
+                };
+               
+                input.addEventListener('blur', finishEdit);
+                input.addEventListener('input', () => {
+                    // Atualizar texto em tempo real enquanto digita
+                    node.text = input.value;
+                    this.updateDisconnectMenuText();
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        input.blur();
+                    } else if (e.key === 'Escape') {
+                        input.value = originalText;
+                        input.blur();
+                    }
+                });
+            }
+           
+            deleteNode(nodeId) {
+                const nodeIndex = this.nodes.findIndex(n => n.id === nodeId);
+                if (nodeIndex === -1) return;
+               
+                const node = this.nodes[nodeIndex];
+               
+                // Remover conexões relacionadas
+                this.connections = this.connections.filter(conn =>
+                    conn.from.id !== nodeId && conn.to.id !== nodeId
+                );
+               
+                // Remover elemento do DOM
+                node.element.remove();
+               
+                // Remover do array
+                this.nodes.splice(nodeIndex, 1);
+               
+                this.updateConnections();
+                this.updateStats();
+                this.updateAllDisconnectMenus();
+               
+                if (this.selectedNode && this.selectedNode.id === nodeId) {
+                    this.selectedNode = null;
+                }
+            }
+           
+            toggleConnectMode(nodeId) {
+                const node = this.nodes.find(n => n.id === nodeId);
+                if (!node) return;
+               
+                if (this.connectingMode && this.sourceNode) {
+                    if (this.sourceNode.id === nodeId) {
+                        this.connectingMode = false;
+                        this.sourceNode = null;
+                    } else {
+                        this.createConnection(this.sourceNode, node);
+                        this.connectingMode = false;
+                        this.sourceNode = null;
+                    }
+                } else {
+                    this.connectingMode = true;
+                    this.sourceNode = node;
+                }
+            }
+           
+            createConnection(fromNode, toNode) {
+                // Verificar se conexão já existe
+                const exists = this.connections.some(conn =>
+                    (conn.from.id === fromNode.id && conn.to.id === toNode.id) ||
+                    (conn.from.id === toNode.id && conn.to.id === fromNode.id)
+                );
+               
+                if (!exists) {
+                    this.connections.push({ from: fromNode, to: toNode });
+                    this.updateConnections();
+                    this.updateStats();
+                    this.updateAllDisconnectMenus();
+                }
+            }
+           
+            updateNodePosition(node) {
+                node.element.style.left = node.x + 'px';
+                node.element.style.top = node.y + 'px';
+            }
+           
+            updateConnections() {
+                const svg = document.getElementById('connections');
+                svg.innerHTML = '';
+               
+                this.connections.forEach(conn => {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                   
+                    const fromRect = conn.from.element.getBoundingClientRect();
+                    const toRect = conn.to.element.getBoundingClientRect();
+                    const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+                   
+                    const fromX = conn.from.x + (fromRect.width / 2);
+                    const fromY = conn.from.y + (fromRect.height / 2);
+                    const toX = conn.to.x + (toRect.width / 2);
+                    const toY = conn.to.y + (toRect.height / 2);
+                   
+                    // Criar curva suave
+                    const midX = (fromX + toX) / 2;
+                    const midY = (fromY + toY) / 2;
+                    const controlOffset = Math.min(100, Math.abs(fromX - toX) * 0.3);
+                   
+                    const path = `M ${fromX} ${fromY} Q ${midX} ${midY - controlOffset} ${toX} ${toY}`;
+                   
+                    line.setAttribute('d', path);
+                    line.setAttribute('class', 'connection-line');
+                    svg.appendChild(line);
+                });
+            }
+           
+            updateStats() {
+                document.getElementById('nodeCount').textContent = this.nodes.length;
+                document.getElementById('connectionCount').textContent = this.connections.length;
+            }
+
+            updateNodeControls() {
+                this.nodes.forEach(node => {
+                    const disconnectBtn = node.element.querySelector('.control-btn.disconnect');
+                    if (disconnectBtn) {
+                        // Verificar se o nó tem conexões
+                        const hasConnections = this.connections.some(conn => 
+                            conn.from.id === node.id || conn.to.id === node.id
+                        );
+                        disconnectBtn.style.display = hasConnections ? 'flex' : 'none';
+                    }
+                });
+            }
+
+            adjustNodeTextSize(node) {
+                if (!node || !node.element) return;
+
+                const content = node.element.querySelector('.node-content');
+                if (!content) return;
+
+                const nodeWidth = node.element.offsetWidth;
+                const nodeHeight = node.element.offsetHeight;
+                const text = content.textContent || content.innerText;
+                
+                // Calcular tamanho baseado na menor dimensão e comprimento do texto
+                let baseSize;
+                
+                if (node.shape === 'circle') {
+                    // Para círculo, usar o diâmetro
+                    const diameter = Math.min(nodeWidth, nodeHeight);
+                    baseSize = Math.max(8, Math.min(24, diameter * 0.15));
+                } else if (node.shape === 'square') {
+                    // Para quadrado, usar o lado
+                    const side = Math.min(nodeWidth, nodeHeight);
+                    baseSize = Math.max(8, Math.min(24, side * 0.12));
+                } else if (node.shape === 'ellipse') {
+                    // Para elipse, usar a menor dimensão
+                    const minDimension = Math.min(nodeWidth, nodeHeight);
+                    baseSize = Math.max(8, Math.min(24, minDimension * 0.15));
+                } else {
+                    // Para retângulo, usar a altura
+                    baseSize = Math.max(8, Math.min(24, nodeHeight * 0.25));
+                }
+
+                // Ajustar baseado no comprimento do texto
+                const textLength = text.length;
+                if (textLength > 20) {
+                    baseSize *= 0.8;
+                } else if (textLength > 15) {
+                    baseSize *= 0.9;
+                } else if (textLength < 5) {
+                    baseSize *= 1.1;
+                }
+
+                // Aplicar o tamanho da fonte
+                content.style.fontSize = Math.round(baseSize) + 'px';
+                
+                // Ajustar line-height baseado no tamanho da fonte
+                content.style.lineHeight = Math.round(baseSize * 1.2) + 'px';
+                
+                console.log(`Texto ajustado para nó ${node.id}: ${Math.round(baseSize)}px (${nodeWidth}x${nodeHeight})`);
+            }
+
+            adjustAllNodesTextSize() {
+                this.nodes.forEach(node => {
+                    this.adjustNodeTextSize(node);
+                });
+            }
+           
+           
+            updateZoom() {
+                this.updateCanvasTransform();
+                document.getElementById('zoomLevel').textContent = Math.round(this.zoomLevel * 100) + '%';
+            }
+            
+            updateCanvasTransform() {
+                const canvas = document.getElementById('canvas');
+                canvas.style.transform = `translate(${this.panOffset.x}px, ${this.panOffset.y}px) scale(${this.zoomLevel})`;
+            }
+           
+            autoLayout() {
+                if (this.nodes.length === 0) return;
+               
+                const centerX = 500;
+                const centerY = 350;
+                const radius = 200;
+               
+                // Centralizar primeiro nó
+                if (this.nodes.length > 0) {
+                    this.nodes[0].x = centerX - 60;
+                    this.nodes[0].y = centerY - 25;
+                    this.updateNodePosition(this.nodes[0]);
+                }
+               
+                // Organizar outros nós em círculo
+                for (let i = 1; i < this.nodes.length; i++) {
+                    const angle = (i - 1) * (2 * Math.PI / (this.nodes.length - 1));
+                    this.nodes[i].x = centerX + Math.cos(angle) * radius - 60;
+                    this.nodes[i].y = centerY + Math.sin(angle) * radius - 25;
+                    this.updateNodePosition(this.nodes[i]);
+                }
+               
+                this.updateConnections();
+            }
+           
+            clearCanvas() {
+                if (confirm('Tem certeza que deseja limpar todo o mapa mental?')) {
+                    this.nodes.forEach(node => node.element.remove());
+                    this.nodes = [];
+                    this.connections = [];
+                    this.selectedNode = null;
+                    this.nextNodeId = 1;
+                   
+                    document.getElementById('connections').innerHTML = '';
+                    this.updateStats();
+                    this.updateAllDisconnectMenus();
+                   
+                    // Adicionar nó inicial
+                    this.addInitialNode();
+                }
+            }
+           
+            setNodeColor(color) {
+                this.currentColor = color;
+               
+                // Atualizar classe ativa
+                document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
+                event.target.classList.add('active');
+               
+                // Se há um nó selecionado, alterar sua cor
+                if (this.selectedNode) {
+                    this.selectedNode.color = color;
+                    this.selectedNode.element.style.backgroundColor = color;
+                }
+            }
+
+            setNodeShape(shape) {
+                this.currentShape = shape;
+               
+                // Atualizar classe ativa
+                document.querySelectorAll('.shape-option').forEach(el => el.classList.remove('active'));
+                event.target.classList.add('active');
+               
+                // Se há um nó selecionado, alterar seu formato
+                if (this.selectedNode) {
+                    this.selectedNode.shape = shape;
+                    this.selectedNode.element.className = this.selectedNode.element.className.replace(/node-shape-\w+/, `node-shape-${shape}`);
+                }
+            }
+
+            setCustomNodeColor(color) {
+                this.customColor = color;
+            }
+
+            applyCustomColor() {
+                this.currentColor = this.customColor;
+                
+                // Adicionar à lista de cores recentes
+                this.addToRecentColors(this.customColor);
+                
+                // Remover classe ativa de todas as opções de cor
+                document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
+                
+                // Se há um nó selecionado, alterar sua cor
+                if (this.selectedNode) {
+                    this.selectedNode.color = this.customColor;
+                    this.selectedNode.element.style.backgroundColor = this.customColor;
+                }
+                
+                // Mostrar feedback visual
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '✅ Aplicado!';
+                button.style.background = 'linear-gradient(135deg, #2ed573, #1e90ff)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = '';
+                }, 1500);
+            }
+
+            addToRecentColors(color) {
+                // Remover a cor se já existir
+                this.recentColors = this.recentColors.filter(c => c !== color);
+                
+                // Adicionar no início
+                this.recentColors.unshift(color);
+                
+                // Manter apenas as 4 mais recentes
+                this.recentColors = this.recentColors.slice(0, 4);
+                
+                // Atualizar a interface
+                this.updateRecentColorsDisplay();
+            }
+
+            updateRecentColorsDisplay() {
+                const grid = document.getElementById('recentColorsGrid');
+                grid.innerHTML = '';
+                
+                // Adicionar cores recentes
+                this.recentColors.forEach((color, index) => {
+                    const colorOption = document.createElement('div');
+                    colorOption.className = 'recent-color-option';
+                    colorOption.style.backgroundColor = color;
+                    colorOption.onclick = () => this.selectRecentColor(color);
+                    colorOption.title = `Cor recente ${index + 1}: ${color}`;
+                    grid.appendChild(colorOption);
+                });
+                
+                // Adicionar espaços vazios se necessário
+                const emptySlots = 4 - this.recentColors.length;
+                for (let i = 0; i < emptySlots; i++) {
+                    const emptyOption = document.createElement('div');
+                    emptyOption.className = 'recent-color-option empty';
+                    emptyOption.innerHTML = '?';
+                    emptyOption.title = 'Nenhuma cor recente';
+                    grid.appendChild(emptyOption);
+                }
+            }
+
+            selectRecentColor(color) {
+                this.currentColor = color;
+                
+                // Remover classe ativa de todas as opções de cor
+                document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
+                
+                // Se há um nó selecionado, alterar sua cor
+                if (this.selectedNode) {
+                    this.selectedNode.color = color;
+                    this.selectedNode.element.style.backgroundColor = color;
+                }
+            }
+           
+            exportAsPNG() {
+                try {
+                    // Criar um canvas temporário para renderizar o mapa mental
+                    const tempCanvas = document.createElement('canvas');
+                    const ctx = tempCanvas.getContext('2d');
+                    
+                    // Calcular bounds de todos os nós
+                    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                    
+                    this.nodes.forEach(node => {
+                        const rect = node.element.getBoundingClientRect();
+                        const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+                        
+                        const nodeX = node.x;
+                        const nodeY = node.y;
+                        const nodeWidth = rect.width;
+                        const nodeHeight = rect.height;
+                        
+                        minX = Math.min(minX, nodeX);
+                        minY = Math.min(minY, nodeY);
+                        maxX = Math.max(maxX, nodeX + nodeWidth);
+                        maxY = Math.max(maxY, nodeY + nodeHeight);
+                    });
+                    
+                    // Adicionar margem
+                    const margin = 50;
+                    const width = maxX - minX + (margin * 2);
+                    const height = maxY - minY + (margin * 2);
+                    
+                    // Configurar canvas temporário
+                    tempCanvas.width = width;
+                    tempCanvas.height = height;
+                    
+                    // Fundo branco
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    // Desenhar conexões primeiro
+                    this.connections.forEach(conn => {
+                        const fromX = conn.from.x - minX + margin;
+                        const fromY = conn.from.y - minY + margin;
+                        const toX = conn.to.x - minX + margin;
+                        const toY = conn.to.y - minY + margin;
+                        
+                        // Desenhar linha de conexão
+                        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--connection-color').trim() || '#667eea';
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        
+                        // Criar curva suave
+                        const midX = (fromX + toX) / 2;
+                        const midY = (fromY + toY) / 2;
+                        const controlOffset = Math.min(100, Math.abs(fromX - toX) * 0.3);
+                        
+                        ctx.moveTo(fromX, fromY);
+                        ctx.quadraticCurveTo(midX, midY - controlOffset, toX, toY);
+                        ctx.stroke();
+                    });
+                    
+                    // Desenhar nós
+                    this.nodes.forEach(node => {
+                        const x = node.x - minX + margin;
+                        const y = node.y - minY + margin;
+                        
+                        // Desenhar fundo do nó
+                        ctx.fillStyle = node.color;
+                        ctx.strokeStyle = '#667eea';
+                        ctx.lineWidth = 2;
+                        
+                        // Aplicar formato do nó
+                        if (node.shape === 'rectangle') {
+                            ctx.fillRect(x, y, 120, 60);
+                            ctx.strokeRect(x, y, 120, 60);
+                        } else if (node.shape === 'square') {
+                            // Calcular tamanho real do quadrado
+                            const squareSize = node.element ? node.element.offsetWidth : 80;
+                            
+                            ctx.fillRect(x, y, squareSize, squareSize);
+                            ctx.strokeRect(x, y, squareSize, squareSize);
+                        } else if (node.shape === 'circle') {
+                            // Calcular tamanho real do círculo
+                            const circleSize = node.element ? 
+                                Math.min(node.element.offsetWidth, node.element.offsetHeight) : 80;
+                            const radius = circleSize / 2;
+                            
+                            ctx.beginPath();
+                            ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI);
+                            ctx.fill();
+                            ctx.stroke();
+                        } else if (node.shape === 'ellipse') {
+                            // Calcular tamanho real da elipse
+                            const ellipseWidth = node.element ? node.element.offsetWidth : 100;
+                            const ellipseHeight = node.element ? node.element.offsetHeight : 60;
+                            const centerX = x + ellipseWidth / 2;
+                            const centerY = y + ellipseHeight / 2;
+                            
+                            ctx.beginPath();
+                            ctx.ellipse(centerX, centerY, ellipseWidth / 2, ellipseHeight / 2, 0, 0, 2 * Math.PI);
+                            ctx.fill();
+                            ctx.stroke();
+                        }
+                        
+                        // Desenhar texto
+                        ctx.fillStyle = '#333333';
+                        ctx.font = '14px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        
+                        // Quebrar texto em múltiplas linhas se necessário
+                        const words = node.text.split(' ');
+                        const lines = [];
+                        let currentLine = words[0];
+                        
+                        for (let i = 1; i < words.length; i++) {
+                            const word = words[i];
+                            const width = ctx.measureText(currentLine + ' ' + word).width;
+                            if (width < 100) {
+                                currentLine += ' ' + word;
+                            } else {
+                                lines.push(currentLine);
+                                currentLine = word;
+                            }
+                        }
+                        lines.push(currentLine);
+                        
+                        // Desenhar linhas de texto
+                        const lineHeight = 16;
+                        const startY = y + 30 - (lines.length - 1) * lineHeight / 2;
+                        
+                        lines.forEach((line, index) => {
+                            ctx.fillText(line, x + 60, startY + index * lineHeight);
+                        });
+                    });
+                    
+                    // Converter para blob e fazer download
+                    tempCanvas.toBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'mapa-mental.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        
+                        // Mostrar mensagem de sucesso
+                        const successMsg = document.createElement('div');
+                        successMsg.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: #4CAF50;
+                            color: white;
+                            padding: 15px 20px;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                            z-index: 10000;
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        `;
+                        successMsg.textContent = '✅ Mapa mental exportado como PNG!';
+                        document.body.appendChild(successMsg);
+                        
+                        setTimeout(() => {
+                            document.body.removeChild(successMsg);
+                        }, 3000);
+                    }, 'image/png');
+                    
+                } catch (error) {
+                    console.error('Erro ao exportar PNG:', error);
+                    alert('Erro ao exportar PNG. Tente novamente.');
+                }
+            }
+           
+            exportAsJSON() {
+                const data = {
+                    nodes: this.nodes.map(node => ({
+                        id: node.id,
+                        x: node.x,
+                        y: node.y,
+                        text: node.text,
+                        color: node.color,
+                        shape: node.shape,
+                        mediaData: node.mediaData
+                    })),
+                    connections: this.connections.map(conn => ({
+                        from: conn.from.id,
+                        to: conn.to.id
+                    })),
+                    nextNodeId: this.nextNodeId
+                };
+               
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'mapa-mental.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+           
+            importJSON() {
+                document.getElementById('fileInput').click();
+            }
+           
+            loadFromJSON(data) {
+                // Limpar canvas atual
+                this.nodes.forEach(node => node.element.remove());
+                this.nodes = [];
+                this.connections = [];
+                this.selectedNode = null;
+                document.getElementById('connections').innerHTML = '';
+               
+                // Carregar nós
+                data.nodes.forEach(nodeData => {
+                    const node = {
+                        id: nodeData.id,
+                        x: nodeData.x,
+                        y: nodeData.y,
+                        text: nodeData.text,
+                        color: nodeData.color || '#ffffff',
+                        shape: nodeData.shape || 'rectangle',
+                        mediaData: nodeData.mediaData || null,
+                        element: null
+                    };
+                    this.nodes.push(node);
+                    this.createNodeElement(node);
+                });
+               
+                // Carregar conexões
+                data.connections.forEach(connData => {
+                    const fromNode = this.nodes.find(n => n.id === connData.from);
+                    const toNode = this.nodes.find(n => n.id === connData.to);
+                    if (fromNode && toNode) {
+                        this.connections.push({ from: fromNode, to: toNode });
+                    }
+                });
+               
+                this.nextNodeId = data.nextNodeId || this.nodes.length + 1;
+               
+                this.updateConnections();
+                this.updateStats();
+                this.updateAllDisconnectMenus();
+                
+                // Ajustar tamanho do texto para todos os nós carregados
+                setTimeout(() => {
+                    this.nodes.forEach(node => {
+                        this.adjustNodeTextSize(node);
+                    });
+                }, 200);
+            }
+           
+            zoomIn() {
+                this.zoomLevel *= 1.2;
+                this.zoomLevel = Math.min(3, this.zoomLevel);
+                this.updateZoom();
+            }
+           
+            zoomOut() {
+                this.zoomLevel *= 0.8;
+                this.zoomLevel = Math.max(0.1, this.zoomLevel);
+                this.updateZoom();
+            }
+            
+            resetZoom() {
+                this.zoomLevel = 1;
+                this.panOffset = { x: 0, y: 0 };
+                this.updateZoom();
+            }
+           
+            centerView() {
+                this.zoomLevel = 1;
+                this.panOffset = { x: 0, y: 0 };
+                this.updateZoom();
+               
+                // Centralizar no primeiro nó se existir
+                if (this.nodes.length > 0) {
+                    const firstNode = this.nodes[0];
+                    const canvasContainer = document.querySelector('.canvas-container');
+                    const rect = canvasContainer.getBoundingClientRect();
+                   
+                    // Calcular offset para centralizar o primeiro nó
+                    this.panOffset.x = (rect.width / 2) - firstNode.x - 60; // 60 é metade da largura do nó
+                    this.panOffset.y = (rect.height / 2) - firstNode.y - 30; // 30 é metade da altura do nó
+                    this.updateCanvasTransform();
+                }
+            }
+
+            changeTheme(themeName) {
+                // Remover todas as classes de tema do body
+                document.body.classList.remove('theme-blue', 'theme-green', 'theme-white');
+                
+                // Adicionar a nova classe de tema
+                if (themeName !== 'default') {
+                    document.body.classList.add(`theme-${themeName}`);
+                }
+                
+                // Atualizar tema ativo nos botões
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                document.querySelector(`[data-theme="${themeName}"]`).classList.add('active');
+                
+                // Salvar tema atual
+                this.currentTheme = themeName;
+                
+                // Atualizar conexões com nova cor
+                this.updateConnections();
+                
+                // Salvar tema no localStorage
+                localStorage.setItem('mindmap-theme', themeName);
+                
+                console.log('Tema alterado para:', themeName);
+            }
+
+            loadTheme() {
+                const savedTheme = localStorage.getItem('mindmap-theme') || 'default';
+                this.changeTheme(savedTheme);
+            }
+
+            toggleControlsExpansion(nodeId) {
+                const expanded = document.getElementById(`controls-expanded-${nodeId}`);
+                if (!expanded) return;
+
+                // Fechar outros controles expandidos
+                if (this.activeControlsMenu && this.activeControlsMenu !== expanded) {
+                    this.activeControlsMenu.classList.remove('show');
+                }
+
+                // Toggle dos controles atuais
+                if (expanded.classList.contains('show')) {
+                    expanded.classList.remove('show');
+                    this.controlsMenuVisible = false;
+                    this.activeControlsMenu = null;
+                } else {
+                    expanded.classList.add('show');
+                    this.controlsMenuVisible = true;
+                    this.activeControlsMenu = expanded;
+                }
+            }
+
+            hideControlsMenu() {
+                if (this.activeControlsMenu) {
+                    this.activeControlsMenu.classList.remove('show');
+                    this.controlsMenuVisible = false;
+                    this.activeControlsMenu = null;
+                }
+            }
+        }
+       
+        // Inicializar aplicação
+        const app = new MindMapApp();
+       
+        // Funções globais para os botões
+        function addNode() {
+            app.addNode();
+        }
+       
+        function clearCanvas() {
+            app.clearCanvas();
+        }
+        
+        function adjustAllTextSizes() {
+            app.adjustAllNodesTextSize();
+        }
+       
+        function autoLayout() {
+            app.autoLayout();
+        }
+       
+        function setNodeColor(color) {
+            app.setNodeColor(color);
+        }
+
+        function setNodeShape(shape) {
+            app.setNodeShape(shape);
+        }
+
+        function setCustomNodeColor(color) {
+            app.setCustomNodeColor(color);
+        }
+
+        function applyCustomColor() {
+            app.applyCustomColor();
+        }
+       
+        function exportAsPNG() {
+            app.exportAsPNG();
+        }
+       
+        function exportAsJSON() {
+            app.exportAsJSON();
+        }
+       
+        function importJSON() {
+            app.importJSON();
+        }
+       
+        function zoomIn() {
+            app.zoomIn();
+        }
+       
+        function zoomOut() {
+            app.zoomOut();
+        }
+       
+        function centerView() {
+            app.centerView();
+        }
+        
+        function resetZoom() {
+            app.resetZoom();
+        }
+
+        function changeTheme(themeName) {
+            app.changeTheme(themeName);
+        }
+       
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'application/json') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        app.loadFromJSON(data);
+                    } catch (error) {
+                        alert('Erro ao carregar arquivo: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+       
+        // Atalhos de teclado globais
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'n':
+                        e.preventDefault();
+                        addNode();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        exportAsJSON();
+                        break;
+                    case 'o':
+                        e.preventDefault();
+                        importJSON();
+                        break;
+                    case '=':
+                    case '+':
+                        e.preventDefault();
+                        zoomIn();
+                        break;
+                    case '-':
+                        e.preventDefault();
+                        zoomOut();
+                        break;
+                    case '0':
+                        e.preventDefault();
+                        resetZoom();
+                        break;
+                }
+            }
+        });
+       
+        // Melhorias na experiência do usuário
+        document.addEventListener('DOMContentLoaded', function() {
+            // Adicionar tooltips para atalhos
+            const tooltips = {
+                'Ctrl+N': 'Novo nó',
+                'Ctrl+S': 'Salvar projeto',
+                'Ctrl+O': 'Abrir projeto',
+                'Ctrl++': 'Zoom in',
+                'Ctrl+-': 'Zoom out',
+                'Ctrl+0': 'Reset zoom',
+                'Ctrl+V': 'Colar imagem/vídeo',
+                'Shift+Click': 'Adicionar nó',
+                'Click direito': 'Menu de formas para novo nó',
+                'Duplo-click': 'Editar nó',
+                'Delete': 'Deletar nó selecionado',
+                'Enter': 'Editar nó selecionado',
+                'Esc': 'Cancelar ação',
+                'Arrastar canvas': 'Pan/mover visão',
+                'Arrastar nó': 'Mover nó',
+                'Botão 📏': 'Redimensionar nó',
+                'Seletor de cor': 'Criar cor personalizada',
+                'Cores recentes': 'Selecionar cores anteriores',
+                'Scroll mouse': 'Zoom in/out'
+            };
+           
+            // Adicionar informações de ajuda
+            // const helpBtn = document.createElement('button');
+            // helpBtn.className = 'btn btn-secondary';
+            // helpBtn.innerHTML = '❓ Ajuda';
+            // helpBtn.onclick = function() {
+            //     const helpText = Object.entries(tooltips)
+            //         .map(([key, desc]) => `${key}: ${desc}`)
+            //         .join('\n');
+            //     alert('Atalhos de Teclado:\n\n' + helpText + '\n\nDicas:\n• Arraste nós para movê-los com animações suaves\n• Arraste o canvas vazio para fazer pan/mover a visão\n• Use Shift+Click para adicionar nós rapidamente\n• Clique com botão direito para escolher formato do nó\n• Clique em "Conectar" para ligar nós\n• Clique em "📏" para redimensionar nós\n• Use o seletor de cor personalizada para criar cores únicas\n• Acesse cores recentes para reutilizar cores anteriores\n• Use o scroll do mouse para zoom (zoom no ponto do mouse)\n• Cole imagens e vídeos com Ctrl+V\n• Escolha diferentes formatos de nós na sidebar ou menu de contexto\n• Use a sidebar com scroll para navegar\n• Suporte completo para touch em dispositivos móveis');
+            // };
+           
+            // Adicionar botão de ajuda à toolbar
+            const toolbar = document.querySelector('.toolbar');
+            toolbar.appendChild(helpBtn);
+        });
+    </script>
+</body>
+</html>
