@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Morphyro">
+    <meta name="organization" content="S(i)S">
     <title>S(i)S - Mapa Mental</title>
     <style>
         :root {
@@ -152,6 +154,290 @@
             transform: translateY(-1px);
         }
 
+        /* Efeito especial para o botão Limpar quando o mapa de exemplo estiver presente */
+        .btn-secondary.example-present {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            animation: examplePresentPulse 2s ease-in-out infinite;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-secondary.example-present:hover {
+            background: linear-gradient(135deg, #ff5252, #e53935);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        @keyframes examplePresentPulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
+            }
+        }
+
+        /* Efeito para mobile */
+        .mobile-btn.secondary.example-present {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            animation: examplePresentPulse 2s ease-in-out infinite;
+            box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .mobile-btn.secondary.example-present:hover {
+            background: linear-gradient(135deg, #ff5252, #e53935);
+            transform: scale(1.05);
+            box-shadow: 0 3px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Dica amigável */
+        .friendly-tip {
+            position: absolute;
+            top: 450px;
+            left: 780px;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            animation: friendlyTipAppear 0.5s ease-out;
+        }
+
+        .friendly-tip-content {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+            text-align: center;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .friendly-tip-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: friendlyTipIconBounce 2s ease-in-out infinite;
+        }
+
+        .friendly-tip h3 {
+            margin: 0 0 15px 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .friendly-tip p {
+            margin: 0 0 25px 0;
+            font-size: 16px;
+            line-height: 1.5;
+            opacity: 0.95;
+        }
+
+        .friendly-tip p strong {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .friendly-tip-close {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .friendly-tip-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes friendlyTipAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes friendlyTipIconBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Responsivo para mobile */
+        @media (max-width: 768px) {
+            .friendly-tip-content {
+                margin: 20px;
+                padding: 25px;
+                max-width: calc(100vw - 40px);
+            }
+
+            .friendly-tip h3 {
+                font-size: 20px;
+            }
+
+            .friendly-tip p {
+                font-size: 14px;
+            }
+
+            .friendly-tip-icon {
+                font-size: 40px;
+            }
+        }
+
+        /* Confirmação de limpeza */
+        .clear-confirm {
+            position: absolute;
+            top: 450px;
+            left: 780px;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            animation: clearConfirmAppear 0.5s ease-out;
+        }
+
+        .clear-confirm-content {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255, 107, 107, 0.4);
+            text-align: center;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .clear-confirm-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: clearConfirmIconShake 0.5s ease-in-out;
+        }
+
+        .clear-confirm h3 {
+            margin: 0 0 15px 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .clear-confirm p {
+            margin: 0 0 25px 0;
+            font-size: 16px;
+            line-height: 1.5;
+            opacity: 0.95;
+        }
+
+        .clear-confirm p strong {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .clear-confirm-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .clear-confirm-cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .clear-confirm-cancel:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .clear-confirm-ok {
+            background: rgba(255, 255, 255, 0.9);
+            color: #ff6b6b;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .clear-confirm-ok:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes clearConfirmAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes clearConfirmIconShake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Responsivo para mobile - confirmação */
+        @media (max-width: 768px) {
+            .clear-confirm-content {
+                margin: 20px;
+                padding: 25px;
+                max-width: calc(100vw - 40px);
+            }
+
+            .clear-confirm h3 {
+                font-size: 20px;
+            }
+
+            .clear-confirm p {
+                font-size: 14px;
+            }
+
+            .clear-confirm-icon {
+                font-size: 40px;
+            }
+
+            .clear-confirm-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
         .color-palette {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -176,7 +462,7 @@
         .custom-color-section {
             margin-top: 15px;
             padding: 15px;
-            background: rgba(102, 126, 234, 0.05);
+            background: rgba(131, 139, 172, 0.05);
             border-radius: 12px;
             border: 1px solid rgba(102, 126, 234, 0.1);
         }
@@ -187,7 +473,7 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            background: transparent;
+            background: linear-gradient(135deg, #48548b 0%, #764ba2 50%, #f093fb 100%);
             transition: all 0.3s ease;
         }
 
@@ -376,6 +662,7 @@
             hyphens: auto;
             font-size: 12px;
             line-height: 1.2;
+            color: #000000;
         }
 
         .node-shape-square .node-content {
@@ -393,6 +680,7 @@
             hyphens: auto;
             font-size: 12px;
             line-height: 1.2;
+            color: #000000;
         }
 
         .node-shape-circle .node-content {
@@ -410,6 +698,7 @@
             hyphens: auto;
             font-size: 12px;
             line-height: 1.2;
+            color: #000000;
         }
 
         .node-shape-ellipse .node-controls {
@@ -440,6 +729,8 @@
         .canvas {
             width: 100%;
             height: 100%;
+            margin-left: -35%;
+            margin-top: -40%;
             position: relative;
             cursor: grab;
             background:
@@ -447,6 +738,8 @@
             background-size: 40px 40px;
             transform-origin: 0 0;
             transition: transform 0.2s ease;
+            min-width: 2000px;
+            min-height: 2000px;
         }
 
         .canvas:active {
@@ -478,6 +771,7 @@
             word-wrap: break-word;
             overflow-wrap: break-word;
             hyphens: auto;
+            color: #000000;
         }
 
         .node.node-shape-square {
@@ -667,6 +961,7 @@
             width: 100%;
             min-width: 50px;
             max-width: 300px;
+            color: #000000;
         }
 
         .node-content {
@@ -680,6 +975,7 @@
             word-wrap: break-word;
             overflow-wrap: break-word;
             hyphens: auto;
+            color: #000000;
         }
 
         .connection {
@@ -2744,7 +3040,7 @@
                     ➕ Adicionar Nó
                 </button>
                
-                <button class="btn btn-secondary" onclick="clearCanvas()">
+                <button id="clearButton" class="btn btn-secondary" onclick="clearCanvas()">
                     🗑️ Limpar Tudo
                 </button>
                 
@@ -2752,9 +3048,6 @@
                     📝 Ajustar Texto
                 </button> -->
                
-                <button class="btn btn-secondary" onclick="autoLayout()">
-                    ⚡ Layout Automático
-                </button>
                 <h4 style="margin-top: 20px; color: #667eea;">Formatos dos Nós</h4>
                 <div class="shape-palette">
                     <div class="shape-option active" onclick="setNodeShape('rectangle')" title="Retangular">
@@ -2784,7 +3077,7 @@
                 
                 <h4 style="margin-top: 20px; color: #667eea;">Cor Personalizada</h4>
                 <div class="custom-color-section">
-                    <input type="color" id="customColorPicker" class="custom-color-picker" onchange="setCustomNodeColor(this.value)">
+                    <input type="color" id="customColorPicker" class="custom-color-picker" value="#667eea" onchange="setCustomNodeColor(this.value)">
                     <button class="btn btn-secondary" onclick="applyCustomColor()" style="margin-top: 10px; width: 100%;">
                         🎨 Aplicar Cor
                     </button>
@@ -2886,17 +3179,9 @@
                                 <span class="btn-icon">➕</span>
                                 <span class="btn-text">Novo Nó</span>
                             </button>
-                            <button class="mobile-btn secondary" onclick="autoLayout()">
-                                <span class="btn-icon">⚡</span>
-                                <span class="btn-text">Layout Auto</span>
-                            </button>
-                            <button class="mobile-btn secondary" onclick="clearCanvas()">
+                            <button id="clearButtonMobile" class="mobile-btn secondary" onclick="clearCanvas()">
                                 <span class="btn-icon">🗑️</span>
                                 <span class="btn-text">Limpar</span>
-                            </button>
-                            <button class="mobile-btn secondary" onclick="centerView()">
-                                <span class="btn-icon">🎯</span>
-                                <span class="btn-text">Centralizar</span>
                             </button>
                         </div>
                     </div>
@@ -3038,17 +3323,39 @@
                     <button class="zoom-btn" onclick="zoomIn()">+</button>
                     <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">↺</button>
                 </div>
-                <button class="btn btn-secondary" onclick="centerView()">🎯 Centralizar</button>
             </div>
            
             <div class="canvas" id="canvas">
-                <svg id="connections" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+                <svg id="connections" style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;">
                 </svg>
+                
+                <!-- Dica amigável após primeira limpeza -->
+                <div id="friendlyTip" class="friendly-tip" style="display: none;">
+                    <div class="friendly-tip-content">
+                        <div class="friendly-tip-icon">💡</div>
+                        <h3>Dica Útil!</h3>
+                        <p>Clique com o <strong>botão direito do mouse</strong> em qualquer lugar do canvas para abrir o seletor de formatos e criar novos nós facilmente!</p>
+                        <button class="friendly-tip-close" onclick="hideFriendlyTip()">Entendi! ✨</button>
+                    </div>
+                </div>
+
+                <!-- Confirmação de limpeza -->
+                <div id="clearConfirm" class="clear-confirm" style="display: none;">
+                    <div class="clear-confirm-content">
+                        <div class="clear-confirm-icon">⚠️</div>
+                        <h3>Limpar Mapa Mental</h3>
+                        <p>Tem certeza que deseja <strong>limpar todo o mapa mental</strong>? Esta ação não pode ser desfeita.</p>
+                        <div class="clear-confirm-buttons">
+                            <button class="clear-confirm-cancel" onclick="hideClearConfirm()">Cancelar</button>
+                            <button class="clear-confirm-ok" onclick="confirmClearCanvas()">Limpar Tudo</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Shape Selector Modal -->
             <div class="shape-selector" id="shapeSelector">
-                <h3>Escolha o formato do nó</h3>
+                <h3>Escolha o formato</h3>
                 <div class="shape-selector-grid">
                     <div class="shape-selector-option" data-shape="rectangle">
                         <div class="shape-selector-preview rectangle"></div>
@@ -3091,7 +3398,7 @@
                 this.currentColor = '#ffffff';
                 this.currentShape = 'rectangle';
                 this.zoomLevel = 1;
-                this.panOffset = { x: 0, y: 0 };
+                this.panOffset = { x: 220, y: 450 };
                 this.nextNodeId = 1;
                 this.connectingMode = false;
                 this.sourceNode = null;
@@ -3107,13 +3414,17 @@
                 this.resizeStartY = 0;
                 this.initialNodeWidth = 0;
                 this.initialNodeHeight = 0;
-                this.customColor = '#ffffff';
+                this.customColor = '#667eea';
                 this.recentColors = [];
                 this.currentTheme = 'default';
                 this.controlsMenuVisible = false;
                 this.activeControlsMenu = null;
                 this.mobileToolkitCollapsed = false;
+                this.hasClearedOnce = false;
                 this.isLandscape = false;
+                
+                // Rastreamento da posição do mouse para zoom
+                this.mousePosition = { x: 0, y: 0 };
                 
                 // Sistema de drag and drop melhorado
                 this.isPanning = false;
@@ -3142,6 +3453,12 @@
                 this.updateRecentColorsDisplay();
                 this.loadTheme();
                 this.detectMobileDevice();
+                this.updateClearButtonEffect();
+                
+                // Garantir que o canvas tenha tamanho adequado na inicialização
+                setTimeout(() => {
+                    this.updateCanvasTransform();
+                }, 100);
             }
             
             detectMobileDevice() {
@@ -3268,6 +3585,13 @@
                 canvasContainer.addEventListener('dblclick', this.handleDoubleClick.bind(this));
                 canvasContainer.addEventListener('wheel', this.handleWheel.bind(this));
                 
+                // Rastrear posição do mouse para zoom
+                canvasContainer.addEventListener('mousemove', (e) => {
+                    const rect = canvasContainer.getBoundingClientRect();
+                    this.mousePosition.x = e.clientX - rect.left;
+                    this.mousePosition.y = e.clientY - rect.top;
+                });
+                
                 // Eventos de touch para dispositivos móveis
                 canvasContainer.addEventListener('touchstart', this.handleTouchStart.bind(this));
                 canvasContainer.addEventListener('touchmove', this.handleTouchMove.bind(this));
@@ -3336,12 +3660,17 @@
                 const canvasContainer = document.querySelector('.canvas-container');
                 const containerRect = canvasContainer.getBoundingClientRect();
                 
+                // Armazenar a posição original do clique para criar o nó
+                const originalClickX = x - containerRect.left;
+                const originalClickY = y - containerRect.top;
+                this.shapeSelectorClickPosition = { x: originalClickX, y: originalClickY };
+                
                 // Posicionar o seletor próximo ao clique
                 const selectorWidth = 280;
                 const selectorHeight = 180;
                 
-                let posX = x - containerRect.left;
-                let posY = y - containerRect.top;
+                let posX = originalClickX;
+                let posY = originalClickY;
                 
                 // Ajustar posição se sair da tela
                 if (posX + selectorWidth > containerRect.width) {
@@ -3357,7 +3686,6 @@
                 shapeSelector.style.top = posY + 'px';
                 shapeSelector.classList.add('show');
                 this.shapeSelectorVisible = true;
-                this.shapeSelectorClickPosition = { x: posX, y: posY };
             }
 
             hideShapeSelector() {
@@ -3371,10 +3699,18 @@
                 const originalShape = this.currentShape;
                 this.currentShape = this.selectedShapeForNewNode;
                 
-                // Criar nó na posição do clique
+                // As coordenadas já estão corretas - são relativas ao container do canvas
+                // Não precisamos converter, apenas usar diretamente
+                const canvasX = this.shapeSelectorClickPosition.x;
+                const canvasY = this.shapeSelectorClickPosition.y;
+                
+                console.log('Posição do clique:', this.shapeSelectorClickPosition);
+                console.log('Criando nó em:', { x: canvasX, y: canvasY });
+                
+                // Criar nó na posição correta do canvas
                 this.addNode(
-                    this.shapeSelectorClickPosition.x,
-                    this.shapeSelectorClickPosition.y,
+                    canvasX,
+                    canvasY,
                     'Nova Ideia'
                 );
                 
@@ -3532,10 +3868,70 @@
             }
            
             addInitialNode() {
-                this.addNode(400, 300, 'Ideia Central');
+                // Criar mapa mental de exemplo
+                const centerX =780; 
+                const centerY = 450; 
+                
+                // Nó central - cor dourada para destaque
+                const centralNode = this.addNode(centerX, centerY, 'Meu Projeto', null, true);
+                this.setNodeColorById(centralNode.id, '#FFD700'); // Dourado
+                
+                // Nós principais (primeiro nível) - cores por categoria
+                const node1 = this.addNode(centerX - 200, centerY - 100, 'Planejamento', null, true);
+                this.setNodeColorById(node1.id, '#4CAF50'); // Verde para planejamento
+                
+                const node2 = this.addNode(centerX + 140, centerY - 100, 'Desenvolvimento', null, true);
+                this.setNodeColorById(node2.id, '#2196F3'); // Azul para desenvolvimento
+                
+                const node3 = this.addNode(centerX - 200, centerY + 100, 'Recursos', null, true);
+                this.setNodeColorById(node3.id, '#FF9800'); // Laranja para recursos
+                
+                const node4 = this.addNode(centerX + 200, centerY + 100, 'Testes', null, true);
+                this.setNodeColorById(node4.id, '#9C27B0'); // Roxo para testes
+                
+                // Nós secundários (segundo nível) - tons mais claros da mesma cor
+                const node1a = this.addNode(centerX - 350, centerY - 200, 'Cronograma', null, true);
+                this.setNodeColorById(node1a.id, '#81C784'); // Verde claro
+                
+                const node1b = this.addNode(centerX - 350, centerY - 50, 'Objetivos', null, true);
+                this.setNodeColorById(node1b.id, '#A5D6A7'); // Verde mais claro
+                
+                const node2a = this.addNode(centerX + 350, centerY - 200, 'Frontend', null, true);
+                this.setNodeColorById(node2a.id, '#64B5F6'); // Azul claro
+                
+                const node2b = this.addNode(centerX + 350, centerY - 50, 'Backend', null, true);
+                this.setNodeColorById(node2b.id, '#90CAF9'); // Azul mais claro
+                
+                const node3a = this.addNode(centerX - 350, centerY + 50, 'Equipe', null, true);
+                this.setNodeColorById(node3a.id, '#FFB74D'); // Laranja claro
+                
+                const node3b = this.addNode(centerX - 350, centerY + 200, 'Orçamento', null, true);
+                this.setNodeColorById(node3b.id, '#FFCC80'); // Laranja mais claro
+                
+                const node4a = this.addNode(centerX + 350, centerY + 50, 'QA', null, true);
+                this.setNodeColorById(node4a.id, '#BA68C8'); // Roxo claro
+                
+                const node4b = this.addNode(centerX + 350, centerY + 200, 'Deploy', null, true);
+                this.setNodeColorById(node4b.id, '#CE93D8'); // Roxo mais claro
+                
+                // Conectar nós central aos principais
+                this.connectNodes(centralNode.id, node1.id);
+                this.connectNodes(centralNode.id, node2.id);
+                this.connectNodes(centralNode.id, node3.id);
+                this.connectNodes(centralNode.id, node4.id);
+                
+                // Conectar nós principais aos secundários
+                this.connectNodes(node1.id, node1a.id);
+                this.connectNodes(node1.id, node1b.id);
+                this.connectNodes(node2.id, node2a.id);
+                this.connectNodes(node2.id, node2b.id);
+                this.connectNodes(node3.id, node3a.id);
+                this.connectNodes(node3.id, node3b.id);
+                this.connectNodes(node4.id, node4a.id);
+                this.connectNodes(node4.id, node4b.id);
             }
            
-            addNode(x = null, y = null, text = 'Nova Ideia', mediaData = null) {
+            addNode(x = null, y = null, text = 'Nova Ideia', mediaData = null, isExample = false) {
                 const canvasContainer = document.querySelector('.canvas-container');
                 const rect = canvasContainer.getBoundingClientRect();
                
@@ -3550,12 +3946,14 @@
                     color: this.currentColor,
                     shape: this.currentShape,
                     mediaData: mediaData,
-                    element: null
+                    element: null,
+                    isExample: isExample
                 };
                
                 this.nodes.push(node);
                 this.createNodeElement(node);
                 this.updateStats();
+                return node;
             }
            
             createNodeElement(node) {
@@ -4114,6 +4512,16 @@
                     
                     // Deselecionar o nó após edição
                     this.deselectAll();
+                    
+                    // Remover o event listener de clique fora
+                    document.removeEventListener('click', this.handleClickOutsideEdit);
+                };
+               
+                // Função para lidar com cliques fora do nó em edição
+                this.handleClickOutsideEdit = (e) => {
+                    if (!node.element.contains(e.target)) {
+                        finishEdit();
+                    }
                 };
                
                 input.addEventListener('blur', finishEdit);
@@ -4130,6 +4538,11 @@
                         input.blur();
                     }
                 });
+                
+                // Adicionar event listener para cliques fora do nó
+                setTimeout(() => {
+                    document.addEventListener('click', this.handleClickOutsideEdit);
+                }, 100);
             }
            
             deleteNode(nodeId) {
@@ -4152,6 +4565,7 @@
                 this.updateConnections();
                 this.updateStats();
                 this.updateAllDisconnectMenus();
+                this.updateClearButtonEffect();
                
                 if (this.selectedNode && this.selectedNode.id === nodeId) {
                     this.selectedNode = null;
@@ -4191,6 +4605,15 @@
                     this.updateAllDisconnectMenus();
                 }
             }
+            
+            connectNodes(fromNodeId, toNodeId) {
+                const fromNode = this.nodes.find(n => n.id === fromNodeId);
+                const toNode = this.nodes.find(n => n.id === toNodeId);
+                
+                if (fromNode && toNode) {
+                    this.createConnection(fromNode, toNode);
+                }
+            }
            
             updateNodePosition(node) {
                 node.element.style.left = node.x + 'px';
@@ -4201,12 +4624,50 @@
                 const svg = document.getElementById('connections');
                 svg.innerHTML = '';
                
+                if (this.connections.length === 0) return;
+               
+                // Calcular bounding box de todos os nós conectados
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+               
+                this.connections.forEach(conn => {
+                    const fromRect = conn.from.element.getBoundingClientRect();
+                    const toRect = conn.to.element.getBoundingClientRect();
+                   
+                    const fromX = conn.from.x;
+                    const fromY = conn.from.y;
+                    const toX = conn.to.x;
+                    const toY = conn.to.y;
+                   
+                    // Expandir bounding box para incluir ambos os nós
+                    minX = Math.min(minX, fromX, toX);
+                    minY = Math.min(minY, fromY, toY);
+                    maxX = Math.max(maxX, fromX + fromRect.width, toX + toRect.width);
+                    maxY = Math.max(maxY, fromY + fromRect.height, toY + toRect.height);
+                });
+               
+                // Adicionar margem para as curvas das linhas
+                const margin = 100;
+                minX -= margin;
+                minY -= margin;
+                maxX += margin;
+                maxY += margin;
+               
+                // Definir viewBox do SVG para cobrir toda a área necessária
+                const width = maxX - minX;
+                const height = maxY - minY;
+                svg.setAttribute('viewBox', `${minX} ${minY} ${width} ${height}`);
+                svg.style.position = 'absolute';
+                svg.style.left = minX + 'px';
+                svg.style.top = minY + 'px';
+                svg.style.width = width + 'px';
+                svg.style.height = height + 'px';
+               
+                // Desenhar as conexões
                 this.connections.forEach(conn => {
                     const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                    
                     const fromRect = conn.from.element.getBoundingClientRect();
                     const toRect = conn.to.element.getBoundingClientRect();
-                    const canvasRect = document.getElementById('canvas').getBoundingClientRect();
                    
                     const fromX = conn.from.x + (fromRect.width / 2);
                     const fromY = conn.from.y + (fromRect.height / 2);
@@ -4321,47 +4782,108 @@
             updateCanvasTransform() {
                 const canvas = document.getElementById('canvas');
                 canvas.style.transform = `translate(${this.panOffset.x}px, ${this.panOffset.y}px) scale(${this.zoomLevel})`;
+                
+                // Garantir que o canvas tenha tamanho adequado para as ligações
+                const canvasContainer = document.querySelector('.canvas-container');
+                const containerRect = canvasContainer.getBoundingClientRect();
+                
+                // Calcular tamanho mínimo baseado no zoom e no container
+                const minWidth = Math.max(2000, containerRect.width * 2 / this.zoomLevel);
+                const minHeight = Math.max(2000, containerRect.height * 2 / this.zoomLevel);
+                
+                canvas.style.minWidth = minWidth + 'px';
+                canvas.style.minHeight = minHeight + 'px';
             }
            
-            autoLayout() {
-                if (this.nodes.length === 0) return;
-               
-                const centerX = 500;
-                const centerY = 350;
-                const radius = 200;
-               
-                // Centralizar primeiro nó
-                if (this.nodes.length > 0) {
-                    this.nodes[0].x = centerX - 60;
-                    this.nodes[0].y = centerY - 25;
-                    this.updateNodePosition(this.nodes[0]);
-                }
-               
-                // Organizar outros nós em círculo
-                for (let i = 1; i < this.nodes.length; i++) {
-                    const angle = (i - 1) * (2 * Math.PI / (this.nodes.length - 1));
-                    this.nodes[i].x = centerX + Math.cos(angle) * radius - 60;
-                    this.nodes[i].y = centerY + Math.sin(angle) * radius - 25;
-                    this.updateNodePosition(this.nodes[i]);
-                }
-               
-                this.updateConnections();
-            }
            
             clearCanvas() {
-                if (confirm('Tem certeza que deseja limpar todo o mapa mental?')) {
-                    this.nodes.forEach(node => node.element.remove());
-                    this.nodes = [];
-                    this.connections = [];
-                    this.selectedNode = null;
-                    this.nextNodeId = 1;
-                   
-                    document.getElementById('connections').innerHTML = '';
-                    this.updateStats();
-                    this.updateAllDisconnectMenus();
-                   
-                    // Adicionar nó inicial
-                    this.addInitialNode();
+                this.showClearConfirm();
+            }
+
+            // Mostrar confirmação de limpeza
+            showClearConfirm() {
+                const clearConfirm = document.getElementById('clearConfirm');
+                if (clearConfirm) {
+                    clearConfirm.style.display = 'block';
+                }
+            }
+
+            // Esconder confirmação de limpeza
+            hideClearConfirm() {
+                const clearConfirm = document.getElementById('clearConfirm');
+                if (clearConfirm) {
+                    clearConfirm.style.display = 'none';
+                }
+            }
+
+            // Executar limpeza após confirmação
+            performClearCanvas() {
+                this.nodes.forEach(node => node.element.remove());
+                this.nodes = [];
+                this.connections = [];
+                this.selectedNode = null;
+                this.nextNodeId = 1;
+               
+                document.getElementById('connections').innerHTML = '';
+                this.updateStats();
+                this.updateAllDisconnectMenus();
+                this.updateClearButtonEffect();
+               
+                // Mostrar dica amigável na primeira limpeza
+                if (!this.hasClearedOnce) {
+                    this.hasClearedOnce = true;
+                    setTimeout(() => {
+                        this.showFriendlyTip();
+                    }, 500);
+                }
+               
+                // Esconder confirmação
+                this.hideClearConfirm();
+               
+                // Canvas fica em branco - não recria o mapa de exemplo
+            }
+
+            // Verificar se há nós de exemplo presentes
+            hasExampleNodes() {
+                return this.nodes.some(node => node.isExample === true);
+            }
+
+            // Atualizar efeito do botão Limpar baseado na presença de nós de exemplo
+            updateClearButtonEffect() {
+                const clearButton = document.getElementById('clearButton');
+                const clearButtonMobile = document.getElementById('clearButtonMobile');
+                const hasExamples = this.hasExampleNodes();
+
+                if (clearButton) {
+                    if (hasExamples) {
+                        clearButton.classList.add('example-present');
+                    } else {
+                        clearButton.classList.remove('example-present');
+                    }
+                }
+
+                if (clearButtonMobile) {
+                    if (hasExamples) {
+                        clearButtonMobile.classList.add('example-present');
+                    } else {
+                        clearButtonMobile.classList.remove('example-present');
+                    }
+                }
+            }
+
+            // Mostrar dica amigável
+            showFriendlyTip() {
+                const friendlyTip = document.getElementById('friendlyTip');
+                if (friendlyTip) {
+                    friendlyTip.style.display = 'block';
+                }
+            }
+
+            // Esconder dica amigável
+            hideFriendlyTip() {
+                const friendlyTip = document.getElementById('friendlyTip');
+                if (friendlyTip) {
+                    friendlyTip.style.display = 'none';
                 }
             }
            
@@ -4385,6 +4907,14 @@
                 if (this.selectedNode) {
                     this.selectedNode.color = color;
                     this.selectedNode.element.style.backgroundColor = color;
+                }
+            }
+            
+            setNodeColorById(nodeId, color) {
+                const node = this.nodes.find(n => n.id === nodeId);
+                if (node && node.element) {
+                    node.color = color;
+                    node.element.style.backgroundColor = color;
                 }
             }
 
@@ -4537,21 +5067,23 @@
            
             exportAsPNG() {
                 try {
+                    if (this.nodes.length === 0) {
+                        alert('Não há nós para exportar. Crie alguns nós primeiro!');
+                        return;
+                    }
+
                     // Criar um canvas temporário para renderizar o mapa mental
                     const tempCanvas = document.createElement('canvas');
                     const ctx = tempCanvas.getContext('2d');
                     
-                    // Calcular bounds de todos os nós
+                    // Calcular bounds de todos os nós usando as posições reais
                     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
                     
                     this.nodes.forEach(node => {
-                        const rect = node.element.getBoundingClientRect();
-                        const canvasRect = document.getElementById('canvas').getBoundingClientRect();
-                        
                         const nodeX = node.x;
                         const nodeY = node.y;
-                        const nodeWidth = rect.width;
-                        const nodeHeight = rect.height;
+                        const nodeWidth = node.element ? node.element.offsetWidth : 120;
+                        const nodeHeight = node.element ? node.element.offsetHeight : 60;
                         
                         minX = Math.min(minX, nodeX);
                         minY = Math.min(minY, nodeY);
@@ -4559,14 +5091,20 @@
                         maxY = Math.max(maxY, nodeY + nodeHeight);
                     });
                     
-                    // Adicionar margem
-                    const margin = 50;
+                    // Adicionar margem generosa
+                    const margin = 80;
                     const width = maxX - minX + (margin * 2);
                     const height = maxY - minY + (margin * 2);
                     
-                    // Configurar canvas temporário
-                    tempCanvas.width = width;
-                    tempCanvas.height = height;
+                    // Configurar canvas temporário com alta resolução
+                    const scale = 2; // Para melhor qualidade
+                    tempCanvas.width = width * scale;
+                    tempCanvas.height = height * scale;
+                    ctx.scale(scale, scale);
+                    
+                    // Configurar contexto para melhor qualidade
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
                     
                     // Fundo branco
                     ctx.fillStyle = '#ffffff';
@@ -4574,13 +5112,16 @@
                     
                     // Desenhar conexões primeiro
                     this.connections.forEach(conn => {
-                        const fromX = conn.from.x - minX + margin;
-                        const fromY = conn.from.y - minY + margin;
-                        const toX = conn.to.x - minX + margin;
-                        const toY = conn.to.y - minY + margin;
+                        const fromNode = conn.from;
+                        const toNode = conn.to;
+                        
+                        const fromX = fromNode.x + (fromNode.element ? fromNode.element.offsetWidth / 2 : 60) - minX + margin;
+                        const fromY = fromNode.y + (fromNode.element ? fromNode.element.offsetHeight / 2 : 30) - minY + margin;
+                        const toX = toNode.x + (toNode.element ? toNode.element.offsetWidth / 2 : 60) - minX + margin;
+                        const toY = toNode.y + (toNode.element ? toNode.element.offsetHeight / 2 : 30) - minY + margin;
                         
                         // Desenhar linha de conexão
-                        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--connection-color').trim() || '#667eea';
+                        ctx.strokeStyle = '#667eea';
                         ctx.lineWidth = 3;
                         ctx.beginPath();
                         
@@ -4598,6 +5139,8 @@
                     this.nodes.forEach(node => {
                         const x = node.x - minX + margin;
                         const y = node.y - minY + margin;
+                        const nodeWidth = node.element ? node.element.offsetWidth : 120;
+                        const nodeHeight = node.element ? node.element.offsetHeight : 60;
                         
                         // Desenhar fundo do nó
                         ctx.fillStyle = node.color;
@@ -4606,66 +5149,66 @@
                         
                         // Aplicar formato do nó
                         if (node.shape === 'rectangle') {
-                            ctx.fillRect(x, y, 120, 60);
-                            ctx.strokeRect(x, y, 120, 60);
+                            ctx.fillRect(x, y, nodeWidth, nodeHeight);
+                            ctx.strokeRect(x, y, nodeWidth, nodeHeight);
                         } else if (node.shape === 'square') {
-                            // Calcular tamanho real do quadrado
-                            const squareSize = node.element ? node.element.offsetWidth : 80;
-                            
-                            ctx.fillRect(x, y, squareSize, squareSize);
-                            ctx.strokeRect(x, y, squareSize, squareSize);
+                            const size = Math.min(nodeWidth, nodeHeight);
+                            ctx.fillRect(x, y, size, size);
+                            ctx.strokeRect(x, y, size, size);
                         } else if (node.shape === 'circle') {
-                            // Calcular tamanho real do círculo
-                            const circleSize = node.element ? 
-                                Math.min(node.element.offsetWidth, node.element.offsetHeight) : 80;
-                            const radius = circleSize / 2;
+                            const radius = Math.min(nodeWidth, nodeHeight) / 2;
+                            const centerX = x + nodeWidth / 2;
+                            const centerY = y + nodeHeight / 2;
                             
                             ctx.beginPath();
-                            ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI);
+                            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                             ctx.fill();
                             ctx.stroke();
                         } else if (node.shape === 'ellipse') {
-                            // Calcular tamanho real da elipse
-                            const ellipseWidth = node.element ? node.element.offsetWidth : 100;
-                            const ellipseHeight = node.element ? node.element.offsetHeight : 60;
-                            const centerX = x + ellipseWidth / 2;
-                            const centerY = y + ellipseHeight / 2;
+                            const centerX = x + nodeWidth / 2;
+                            const centerY = y + nodeHeight / 2;
                             
                             ctx.beginPath();
-                            ctx.ellipse(centerX, centerY, ellipseWidth / 2, ellipseHeight / 2, 0, 0, 2 * Math.PI);
+                            ctx.ellipse(centerX, centerY, nodeWidth / 2, nodeHeight / 2, 0, 0, 2 * Math.PI);
                             ctx.fill();
                             ctx.stroke();
                         }
                         
                         // Desenhar texto
-                        ctx.fillStyle = '#333333';
-                        ctx.font = '14px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                        ctx.fillStyle = '#000000';
+                        ctx.font = 'bold 14px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
                         
                         // Quebrar texto em múltiplas linhas se necessário
                         const words = node.text.split(' ');
                         const lines = [];
-                        let currentLine = words[0];
+                        let currentLine = words[0] || '';
                         
                         for (let i = 1; i < words.length; i++) {
                             const word = words[i];
-                            const width = ctx.measureText(currentLine + ' ' + word).width;
-                            if (width < 100) {
-                                currentLine += ' ' + word;
+                            const testLine = currentLine + ' ' + word;
+                            const textWidth = ctx.measureText(testLine).width;
+                            const maxWidth = nodeWidth * 0.8; // 80% da largura do nó
+                            
+                            if (textWidth < maxWidth) {
+                                currentLine = testLine;
                             } else {
                                 lines.push(currentLine);
                                 currentLine = word;
                             }
                         }
-                        lines.push(currentLine);
+                        if (currentLine) lines.push(currentLine);
                         
-                        // Desenhar linhas de texto
-                        const lineHeight = 16;
-                        const startY = y + 30 - (lines.length - 1) * lineHeight / 2;
+                        // Desenhar linhas de texto centralizadas
+                        const lineHeight = 18;
+                        const totalTextHeight = lines.length * lineHeight;
+                        const startY = y + nodeHeight / 2 - totalTextHeight / 2 + lineHeight / 2;
                         
                         lines.forEach((line, index) => {
-                            ctx.fillText(line, x + 60, startY + index * lineHeight);
+                            const textX = x + nodeWidth / 2;
+                            const textY = startY + index * lineHeight;
+                            ctx.fillText(line, textX, textY);
                         });
                     });
                     
@@ -4700,7 +5243,7 @@
                         setTimeout(() => {
                             document.body.removeChild(successMsg);
                         }, 3000);
-                    }, 'image/png');
+                    }, 'image/png', 1.0);
                     
                 } catch (error) {
                     console.error('Erro ao exportar PNG:', error);
@@ -4787,40 +5330,37 @@
             }
            
             zoomIn() {
+                const oldZoom = this.zoomLevel;
                 this.zoomLevel *= 1.2;
                 this.zoomLevel = Math.min(3, this.zoomLevel);
+                
+                // Ajustar pan offset para zoom no ponto do mouse
+                const zoomRatio = this.zoomLevel / oldZoom;
+                this.panOffset.x = this.mousePosition.x - (this.mousePosition.x - this.panOffset.x) * zoomRatio;
+                this.panOffset.y = this.mousePosition.y - (this.mousePosition.y - this.panOffset.y) * zoomRatio;
+                
                 this.updateZoom();
             }
            
             zoomOut() {
+                const oldZoom = this.zoomLevel;
                 this.zoomLevel *= 0.8;
                 this.zoomLevel = Math.max(0.1, this.zoomLevel);
+                
+                // Ajustar pan offset para zoom no ponto do mouse
+                const zoomRatio = this.zoomLevel / oldZoom;
+                this.panOffset.x = this.mousePosition.x - (this.mousePosition.x - this.panOffset.x) * zoomRatio;
+                this.panOffset.y = this.mousePosition.y - (this.mousePosition.y - this.panOffset.y) * zoomRatio;
+                
                 this.updateZoom();
             }
             
             resetZoom() {
                 this.zoomLevel = 1;
-                this.panOffset = { x: 0, y: 0 };
+                this.panOffset = { x: 200, y: 435 };
                 this.updateZoom();
             }
            
-            centerView() {
-                this.zoomLevel = 1;
-                this.panOffset = { x: 0, y: 0 };
-                this.updateZoom();
-               
-                // Centralizar no primeiro nó se existir
-                if (this.nodes.length > 0) {
-                    const firstNode = this.nodes[0];
-                    const canvasContainer = document.querySelector('.canvas-container');
-                    const rect = canvasContainer.getBoundingClientRect();
-                   
-                    // Calcular offset para centralizar o primeiro nó
-                    this.panOffset.x = (rect.width / 2) - firstNode.x - 60; // 60 é metade da largura do nó
-                    this.panOffset.y = (rect.height / 2) - firstNode.y - 30; // 30 é metade da altura do nó
-                    this.updateCanvasTransform();
-                }
-            }
 
             changeTheme(themeName) {
                 // Remover todas as classes de tema do body
@@ -4898,6 +5438,14 @@
        
         // Inicializar aplicação
         const app = new MindMapApp();
+
+
+        // ========================================
+        // Desenvolvido por: Morphyro
+        // Organização: S(i)S - Surrealist Inner Society
+        // Aplicação: Mapa Mental Interativo
+        // Versão: 1.0
+        // ========================================
        
         // Funções globais para os botões
         function addNode() {
@@ -4907,14 +5455,23 @@
         function clearCanvas() {
             app.clearCanvas();
         }
+
+        function hideFriendlyTip() {
+            app.hideFriendlyTip();
+        }
+
+        function hideClearConfirm() {
+            app.hideClearConfirm();
+        }
+
+        function confirmClearCanvas() {
+            app.performClearCanvas();
+        }
         
         function adjustAllTextSizes() {
             app.adjustAllNodesTextSize();
         }
        
-        function autoLayout() {
-            app.autoLayout();
-        }
        
         function setNodeColor(color) {
             app.setNodeColor(color);
@@ -4952,9 +5509,6 @@
             app.zoomOut();
         }
        
-        function centerView() {
-            app.centerView();
-        }
         
         function resetZoom() {
             app.resetZoom();
